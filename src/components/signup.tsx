@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { isNull } from 'util';
 
 import {signup} from "../api/api";
-
+import './css/signup.css'
 type signupProps = {
 
     name : string | undefined;
@@ -9,6 +10,8 @@ type signupProps = {
     call : string | undefined;
 
     password : string | undefined;
+
+    email : string | undefined;
 
 }
 
@@ -34,9 +37,20 @@ function SignUp({}:signupProps){
 
         password : undefined,
 
+        email : undefined,
+
     });
 
-    const [imgUrl, setImgUrl] = useState(null);
+    const [imgUrl, setImgUrl] = useState({
+        file: '',
+        imagePreviewUrl : '',
+    });
+
+    let {imagePreviewUrl} = imgUrl;
+    let $imagePreview: {} | null | undefined = null;
+    if (imagePreviewUrl){
+        $imagePreview = (<img className="imgBox" src={imagePreviewUrl}/>);
+    }
 
     const [check, setCheck] = useState<checkProps>({
 
@@ -60,9 +74,21 @@ function SignUp({}:signupProps){
 
     }
 
-    const isSelectedImg = (e:React.ChangeEvent<HTMLInputElement>)=>{
+    const  isSelectedImg = (e:React.ChangeEvent<HTMLInputElement>)=>{
+        e.preventDefault();
+        let reader = new FileReader();
+        let file = (e.target as any).files[0];
 
-    //setImgUrl(e.target.files[0]);
+        console.log("0");
+        reader.onloadend = () => {
+            console.log("1");
+            setImgUrl({
+                file : file,
+                imagePreviewUrl : reader.result as any
+            });
+            
+        }
+        reader.readAsDataURL(file);
 
     }
 
@@ -136,18 +162,20 @@ return(
 
 <h1>가게등록</h1>
 
-
-<input type="file" accept="image/jpeg, image/jpg" onChange={isSelectedImg}/>
+<div className="imgContainer">{$imagePreview}</div>
+<input type="file" onChange={isSelectedImg}/>
 
 <p>전화번호 : <input type="text" onChange={signupHandler} value={seller.call} name="call"/></p>
 
-<p>상호명 : <input type="text" onChange={signupHandler} value={seller.name} name="name"/></p>
+<p>상호명 : <input type="text" onChange={signupHandler} value={seller.name} name="name"/><button type="button" onClick={idCorrectHandler}>확인</button></p>
 
-<button type="button" onClick={idCorrectHandler}>확인</button>
 
-<p>비밀번호 : <input type="text" onChange={signupHandler} value={seller.password} name="password"/></p>
+<p>E-mail : <input type="text" onChange={signupHandler} value={seller.email} name="email"/></p>
 
-<p>비밀번호확인 : <input type="text" onChange={passwordCorrectHandler} name="passwordCorrect"/></p>  {/*유효성 검사*/}
+
+<p>비밀번호 : <input type="password" onChange={signupHandler} value={seller.password} name="password"/></p>
+
+<p>비밀번호확인 : <input type="password" onChange={passwordCorrectHandler} name="passwordCorrect"/></p>  {/*유효성 검사*/}
 
 <button
 
@@ -158,7 +186,10 @@ onClick={()=>
 //post
 
 allFieldCheckHandler();
-
+console.log(imgUrl.file);
+console.group(imgUrl.imagePreviewUrl);
+console.log(imagePreviewUrl);
+console.log($imagePreview as any);
 if(check.allFieldCheck === true && check.idCheck === true && check.passwordCheck === true){
 
 signup(seller);

@@ -1,0 +1,10 @@
+.imgBox{
+    width :100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 70%;
+}
+.imgContainer{
+    width : 120px;
+    height: 120px;;
+}
