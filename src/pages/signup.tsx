@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { isNull } from 'util';
 
 import {signup} from "../api/api";
-import './css/signup.css'
+
+import '../css/signup.css'
 type signupProps = {
 
     name : string | undefined;
@@ -79,9 +79,7 @@ function SignUp({}:signupProps){
         let reader = new FileReader();
         let file = (e.target as any).files[0];
 
-        console.log("0");
         reader.onloadend = () => {
-            console.log("1");
             setImgUrl({
                 file : file,
                 imagePreviewUrl : reader.result as any
@@ -89,7 +87,6 @@ function SignUp({}:signupProps){
             
         }
         reader.readAsDataURL(file);
-
     }
 
     const idCorrectHandler = () =>{

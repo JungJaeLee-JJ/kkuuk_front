@@ -1,1 +1,1 @@
-export const uri = "";
+export const uri = "http://localhost:9876/seller";
