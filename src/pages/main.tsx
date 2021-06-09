@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import {getSeller} from "../api/api.js"
-
+import {SellerContext} from "../context/seller";
 
 type MainProps = {
 
@@ -9,103 +9,93 @@ type MainProps = {
 
 type sellerProps = {
 
-sellerName : string | undefined;
+    sellerName : string | undefined;
 
-totalMember : undefined | number;
+    totalMember : undefined | number;
 
-totalPoint : number | undefined;
+    totalPoint : number | undefined;
 
 }
 
 type memberProps = {
 
-name : string;
+    name : string;
 
-callNum : string;
+    callNum : string;
 
 }
 
 type memberPointProps = {
 
-name : string;
+    name : string;
 
-callNum : string;
+    callNum : string;
 
-point : number;
+    point : number;
 
 }
 
 function Main({}:MainProps){
+    
+    const {sellerInfo} = useContext<ISellerContext>(SellerContext);
 
-var pk = 0; // 매장별 primary key
+    const [member,setMember] = useState<memberProps>({
 
-const [seller,setSeller] = useState<sellerProps>({
+        name : "",
 
-sellerName : undefined,
+        callNum : ""
 
-totalMember : undefined,
+    });
 
-totalPoint : undefined,
+    const [memberPoint, setMemberPoint] = useState<memberPointProps>({
 
-});
+        name : "",
 
-const [member,setMember] = useState<memberProps>({
+        callNum : "",
 
-name : "",
+        point : 0,
 
-callNum : ""
+    })
 
-});
+    //seller의 정보 조회
 
-const [memberPoint, setMemberPoint] = useState<memberPointProps>({
+    // useEffect(()=>{
 
-name : "",
+    // getSeller().then((data: React.SetStateAction<sellerProps>)=>setSeller(data));
 
-callNum : "",
+    // },[]);
 
-point : 0,
+    //member 인풋 상태 변화 state에 저장
 
-})
+    const joinmemberHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
 
-//seller의 정보 조회
+        setMember({
 
-useEffect(()=>{
+        ...member,
 
-getSeller().then((data: React.SetStateAction<sellerProps>)=>setSeller(data));
+        [e.target.name] : e.target.value,
 
-},[]);
+        })
 
-//member 인풋 상태 변화 state에 저장
+    }
 
-const joinmemberHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
+    const memberPointHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
 
-setMember({
+        setMemberPoint({
 
-...member,
+        ...memberPoint,
 
-[e.target.name] : e.target.value,
+        [e.target.name] : e.target.value,
 
-})
+        })
 
-}
-
-const memberPointHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
-
-setMemberPoint({
-
-...memberPoint,
-
-[e.target.name] : e.target.value,
-
-})
-
-}
+    }
 
 return(
 
     <section className="container">
 
-        {!(seller.sellerName===undefined)? <p>Loading</p>:
+        {(sellerInfo?.email===undefined)? <p>Loading</p>:
 
             <div>
 
@@ -113,11 +103,11 @@ return(
 
                     {/* useEffect => get 으로 회원정보 보여줌.*/ }
 
-                    <h3>{`업체명 : ${seller.sellerName}`}</h3>
+                    <h3>{`업체명 : ${sellerInfo?.username}`}</h3>
 
-                    <p>{`회원 수 : ${seller.totalMember}`}</p>
+                    <p>{`회원 수 : 0`}</p>
 
-                    <p>{`총 포인트 : ${seller.totalPoint}`}</p>
+                    <p>{`총 포인트 : 0`}</p>
 
                     </div>
 

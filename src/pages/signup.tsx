@@ -179,25 +179,21 @@ return(
 onClick={()=>
 
 {
-
+    signup(seller);
 //post
 
-allFieldCheckHandler();
-console.log(imgUrl.file);
-console.group(imgUrl.imagePreviewUrl);
-console.log(imagePreviewUrl);
-console.log($imagePreview as any);
-if(check.allFieldCheck === true && check.idCheck === true && check.passwordCheck === true){
+// allFieldCheckHandler();
+// if(check.allFieldCheck === true && check.idCheck === true && check.passwordCheck === true){
 
-signup(seller);
 
-}else{
 
-alert("wrong info.")
+// }else{
 
-}
+// alert("wrong info.")
 
-}
+// }
+
+ }
 
 }>등록</button>
 

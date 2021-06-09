@@ -7,8 +7,11 @@ import Main from "./pages/main";
 import Profile from "./pages/profile";
 import NotFound from "./pages/notFound";
 
+import {SellerContext, SellerContextProvider} from "./context/seller";
+
 function App() {
   return (
+    <SellerContextProvider>
     <HashRouter>
     <Switch>
       <Route exact path="/"  component={Home} />
@@ -19,6 +22,7 @@ function App() {
       <Route component={NotFound}/>
     </Switch>
     </HashRouter>
+    </SellerContextProvider>
   );
 }
 

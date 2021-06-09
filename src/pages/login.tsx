@@ -1,7 +1,7 @@
-import React,{useState,useEffect} from "react";
+import React,{useState,useEffect,useContext} from "react";
 import { useHistory } from "react-router-dom";
 
-import {login} from "../api/api.js";
+import {SellerContext} from "../context/seller";
 
 type loginProps = {
 
@@ -10,11 +10,10 @@ type loginProps = {
     password : string
 
 };
-type authProps = {
-    auth : boolean,
-}
 
 function Login({}:loginProps){
+    const {login, sellerInfo} = useContext<ISellerContext>(SellerContext);
+    let history = useHistory();
 
     const [member,setMember] = useState<loginProps>({
 
@@ -23,12 +22,6 @@ function Login({}:loginProps){
         password : "",
 
     });
-
-    const [auth,setAuth] = useState<authProps>({
-        auth : false,
-    });
-
-    let history = useHistory();
 
     const loginHandler = (e:React.ChangeEvent<HTMLInputElement>)=>{
 
@@ -44,13 +37,12 @@ function Login({}:loginProps){
 
     const onSubmitAccount = async ()=>{
         try{
-            const user = await login(member);
-            console.log(user);
-            if(user){
-                history.replace("/main");
-            }
+            login(member.email,member.password);
+            // if(sellerInfo?.email === member.email){
+                 history.replace('/main');
+            // }
         }catch(e){
-            window.alert(e);
+           alert(e);
         }
     }
 
