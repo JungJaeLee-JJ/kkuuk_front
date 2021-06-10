@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
 
 import {getSeller} from "../api/api.js"
 import {SellerContext} from "../context/seller";
@@ -37,7 +38,9 @@ type memberPointProps = {
 
 function Main({}:MainProps){
     
-    const {sellerInfo} = useContext<ISellerContext>(SellerContext);
+    const {sellerInfo,setSellerInfo} = useContext<ISellerContext>(SellerContext);
+
+    let history = useHistory();
 
     const [member,setMember] = useState<memberProps>({
 
@@ -91,6 +94,11 @@ function Main({}:MainProps){
 
     }
 
+    const logout = () =>{
+        setSellerInfo(undefined);
+        history.replace('/');
+    }
+
 return(
 
     <section className="container">
@@ -100,6 +108,7 @@ return(
             <div>
 
                 <div>
+                    <button onClick={logout} >로그아웃</button>
 
                     {/* useEffect => get 으로 회원정보 보여줌.*/ }
 

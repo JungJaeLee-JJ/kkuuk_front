@@ -1,5 +1,5 @@
-import React from 'react';
-import { HashRouter, Route, Switch } from "react-router-dom";
+import React, { useContext } from 'react';
+import { HashRouter, Redirect, Route, Switch } from "react-router-dom";
 import Home from "./pages/home";
 import Login from "./pages/login";
 import SignUp from "./pages/signup";
@@ -10,6 +10,7 @@ import NotFound from "./pages/notFound";
 import {SellerContext, SellerContextProvider} from "./context/seller";
 
 function App() {
+  const {sellerInfo} = useContext<ISellerContext>(SellerContext);
   return (
     <SellerContextProvider>
     <HashRouter>

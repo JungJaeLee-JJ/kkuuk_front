@@ -7,8 +7,7 @@ interface ISellerInfo {
 
 interface ISellerContext{
     sellerInfo : ISellerInfo | undefined;
-    login : (email : string, password : string)=>void;
-    logout : ()=>void;
+    setSellerInfo : sellerInfo;
     sellerSet : ()=>void;
 
 }

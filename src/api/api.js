@@ -2,6 +2,8 @@ import {uri} from "./config.js";
 
 import axios from 'axios';
 
+
+
 export const signup = async(member) => {
     console.log(member);
     const res = await axios.post(`${uri}/`,member);
@@ -18,9 +20,9 @@ export const logIn = async(member)=>{
     const users = response.data;
     const user = users.find((user)=>user.email === member.email);
     if(!user||user.password !== member.password){
-        throw new Error("아이디나 비밀번호가 잘못 되었습니다.")
+        throw new Error("아이디 또는 비밀번호가 일치하지 않습니다.");
     }
-        return user;
+    return user;
 }
 
 //회원조회

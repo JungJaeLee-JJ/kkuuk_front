@@ -1,6 +1,7 @@
 import React,{useState,useEffect,useContext} from "react";
 import { useHistory } from "react-router-dom";
 
+import {logIn} from "../api/api";
 import {SellerContext} from "../context/seller";
 
 type loginProps = {
@@ -12,7 +13,7 @@ type loginProps = {
 };
 
 function Login({}:loginProps){
-    const {login, sellerInfo} = useContext<ISellerContext>(SellerContext);
+    const {setSellerInfo} = useContext<ISellerContext>(SellerContext);
     let history = useHistory();
 
     const [member,setMember] = useState<loginProps>({
@@ -37,12 +38,15 @@ function Login({}:loginProps){
 
     const onSubmitAccount = async ()=>{
         try{
-            login(member.email,member.password);
-            // if(sellerInfo?.email === member.email){
-                 history.replace('/main');
-            // }
+            const seller = await logIn(member);
+            setSellerInfo({
+                username : seller.username,
+                email : seller.email,
+                picture : "" 
+            });
+            history.replace("/main");
         }catch(e){
-           alert(e);
+           window.alert(e);
         }
     }
 
@@ -61,8 +65,6 @@ function Login({}:loginProps){
     onClick={onSubmitAccount}
 
     >로그인</button>
-
-    {/*POST부분*/}
 
     </section>
 

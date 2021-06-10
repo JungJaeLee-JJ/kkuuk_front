@@ -5,8 +5,7 @@ import {logIn} from '../api/api.js';
 
 const defaultContext : ISellerContext = {
         sellerInfo: undefined,
-        login:()=>{},
-        logout:()=>{},
+        setSellerInfo : undefined,
         sellerSet:()=>{},
 }
 
@@ -24,18 +23,7 @@ interface Props{
 
 const SellerContextProvider = ({children}:Props) => {
     const [sellerInfo, setSellerInfo] = useState<ISellerInfo | undefined>(undefined);
-    const login = (email : string, password : string) =>{
-        logIn({
-            email : email,
-            password : password,
-        }).then((res)=>{
-                setSellerInfo({
-                    username : "김갑생할머니김",
-                    email : res.email,
-                    picture : "",
-                });
-        })
-    }
+
 
     const logout = () =>{
 
@@ -48,8 +36,7 @@ const SellerContextProvider = ({children}:Props) => {
     return <SellerContext.Provider
         value = {{
             sellerInfo,
-            login,
-            logout,
+            setSellerInfo,
             sellerSet
         }}
     >
