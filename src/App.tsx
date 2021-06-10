@@ -1,18 +1,29 @@
-import React from 'react';
-import { HashRouter, Route } from "react-router-dom";
-import Home from "./components/home";
-import Login from "./components/login";
-import SignUp from "./components/signup";
-import Main from "./components/main";
+import React, { useContext } from 'react';
+import { HashRouter, Redirect, Route, Switch } from "react-router-dom";
+import Home from "./pages/home";
+import Login from "./pages/login";
+import SignUp from "./pages/signup";
+import Main from "./pages/main";
+import Profile from "./pages/profile";
+import NotFound from "./pages/notFound";
+
+import {SellerContext, SellerContextProvider} from "./context/seller";
 
 function App() {
+  const {sellerInfo} = useContext<ISellerContext>(SellerContext);
   return (
+    <SellerContextProvider>
     <HashRouter>
-      <Route path="/"  exact={true} component={Home} />
+    <Switch>
+      <Route exact path="/"  component={Home} />
       <Route path="/login" component={Login} />
       <Route path="/signup" component={SignUp} />
       <Route path="/main" component={Main}/>
+      <Route path="/profile" component={Profile}/>
+      <Route component={NotFound}/>
+    </Switch>
     </HashRouter>
+    </SellerContextProvider>
   );
 }
 
