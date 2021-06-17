@@ -1,1 +1,1 @@
-export const uri = "http://kkuuk.hyu-likelion.org/api";
+export const uri = "https://kkuuk.hyu-likelion.org/api";

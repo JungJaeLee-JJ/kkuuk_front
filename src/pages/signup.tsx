@@ -19,8 +19,10 @@ function SignUp(){
         file: '',
         imagePreviewUrl : '',
     });
+    const [correct,setCorrect] = useState("불일치");
     let f = new FormData();
     let f2 = new FormData();
+    let passwordFlag = false;
     let emailFlag = false;
     let history = useHistory();
     let {imagePreviewUrl} = imgUrl;
@@ -47,7 +49,12 @@ function SignUp(){
                 callNum : callNum.callNum.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3')
             })
         }
-    },[callNum.callNum]);
+        if(password.password === rePassword.rePassword && password.password.length>=1){
+           setCorrect("일치");
+        }else{
+            setCorrect("불일치");
+        }
+    },[callNum.callNum,rePassword.rePassword]);
 
     const sellerNameHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{setSellerName({sellerName : e.target.value,})}
     const emailHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{setEmail({email : e.target.value,})}
@@ -91,6 +98,7 @@ function SignUp(){
 
     }
 
+
 const checkInputs= async() => {
     let re = /\S+@\S+\.\S+/;
     let emailTest = re.test(email.email);
@@ -113,7 +121,7 @@ return(
 <p>상호명 : <input type="text" onChange={sellerNameHandler} value={sellerName.sellerName} name="name"/></p>
 <p>E-mail : <input type="text" onChange={emailHandler} value={email.email} name="email"/><button type="button" onClick={emailCorrectHandler}>확인</button></p>
 <p>비밀번호 : <input type="password" onChange={passwordHandler} value={password.password} name="password"/></p>
-<p>비밀번호확인 : <input type="password" onChange={repasswordHandler} value={rePassword.rePassword}/></p>  {/*유효성 검사*/}
+<p>비밀번호확인 : <input type="password" onChange={repasswordHandler} value={rePassword.rePassword}/>{<div>{correct}</div>}</p>  {/*유효성 검사*/}
 
 <button
 
