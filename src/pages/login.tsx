@@ -40,9 +40,8 @@ function Login({}:loginProps){
         try{
             const seller = await logIn(member);
             setSellerInfo({
-                username : seller.username,
-                email : seller.email,
-                picture : "" 
+                 username : "seller.username",
+                 email : "seller.email",
             });
             history.replace("/main");
         }catch(e){

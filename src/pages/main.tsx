@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
-import {getSeller} from "../api/api.js"
+import {getSeller,enroll} from "../api/api.js";
 import {SellerContext} from "../context/seller";
 
 type MainProps = {
@@ -19,6 +19,7 @@ type sellerProps = {
 }
 
 type memberProps = {
+    email : string;
 
     name : string;
 
@@ -41,8 +42,10 @@ function Main({}:MainProps){
     const {sellerInfo,setSellerInfo} = useContext<ISellerContext>(SellerContext);
 
     let history = useHistory();
+    let f = new FormData();
 
     const [member,setMember] = useState<memberProps>({
+        email : "seller@naver.com",
 
         name : "",
 
@@ -58,7 +61,15 @@ function Main({}:MainProps){
 
         point : 0,
 
-    })
+    });
+
+    const callNumHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
+        const regex = /^[0-9\b -]{0,4}$/;
+        if(regex.test(e.target.value)){
+            setMember({...member,
+                callNum : e.target.value,})
+            }
+    }
 
     //seller의 정보 조회
 
@@ -69,6 +80,7 @@ function Main({}:MainProps){
     // },[]);
 
     //member 인풋 상태 변화 state에 저장
+
 
     const joinmemberHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
 
@@ -92,6 +104,14 @@ function Main({}:MainProps){
 
         })
 
+    }
+    const checkInputs=()=>{
+        const name = member.name.length >=1;
+        const bnum = member.callNum.length >=0;
+        f.append('email',"akrnote@nate.com");
+        f.append('name',member.name);
+        f.append('last_4_digit',member.callNum);
+        return (name && bnum)
     }
 
     const logout = () =>{
@@ -128,11 +148,19 @@ return(
 
                         <h3>회원추가</h3>
 
-                        <p>전화번호(끝 4자리)<input type="text" onChange={joinmemberHandler} value={member.callNum} name="callNum"/></p>
+                        <p>전화번호(끝 4자리)<input type="text" onChange={callNumHandler} value={member.callNum} name="callNum"/></p>
 
                         <p>이름<input type="text" onChange={joinmemberHandler} value={member.name} name="name"/></p>
 
-                        <button>추가</button>
+                        <button
+                            onClick={()=>{
+                                if(checkInputs()){
+                                    enroll(f);
+                                }else{
+                                    alert("Error");
+                                }
+                            }}
+                        >추가</button>
 
                     </div>
 
