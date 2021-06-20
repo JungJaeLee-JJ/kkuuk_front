@@ -1,1 +1,1 @@
-export const uri = "http://localhost:9876/seller";
+export const uri = "https://kkuuk.hyu-likelion.org/api";

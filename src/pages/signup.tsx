@@ -1,78 +1,65 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
-import {signup} from "../api/api";
+import {signup,duplicate} from "../api/api";
 
 import '../css/signup.css'
-type signupProps = {
 
-    name : string | undefined;
-
-    call : string | undefined;
-
-    password : string | undefined;
-
-    email : string | undefined;
-
-}
-
-type checkProps = {
-
-    idCheck : boolean;
-
-    passwordCheck : boolean;
-
-    allFieldCheck : boolean;
-
-}
-
-function SignUp({}:signupProps){
+function SignUp(){
 
 //state
 
-    const [seller,setSeller] = useState<signupProps>({
 
-        name : undefined,
-
-        call : undefined,
-
-        password : undefined,
-
-        email : undefined,
-
-    });
-
+    const [callNum,setCallNum] = useState({callNum : ""});
+    const [sellerName,setSellerName] = useState({sellerName : ""});
+    const [email,setEmail] = useState({email : ""});
+    const [password,setPassword] = useState({password : ""});
+    const [rePassword,setRepassword] = useState({rePassword : ""});
     const [imgUrl, setImgUrl] = useState({
         file: '',
         imagePreviewUrl : '',
     });
-
+    const [correct,setCorrect] = useState("불일치");
+    let f = new FormData();
+    let f2 = new FormData();
+    let passwordFlag = false;
+    let emailFlag = false;
+    let history = useHistory();
     let {imagePreviewUrl} = imgUrl;
     let $imagePreview: {} | null | undefined = null;
     if (imagePreviewUrl){
         $imagePreview = (<img className="imgBox" src={imagePreviewUrl}/>);
     }
 
-    const [check, setCheck] = useState<checkProps>({
-
-        idCheck : false,
-
-        passwordCheck : false,
-
-        allFieldCheck : false,
-
-    });
-
-    const signupHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
-
-        setSeller({
-
-        ...seller,
-
-        [e.target.name]:e.target.value,
-
-        });
-
+    //전화번호 유효성 검사
+    const callNumHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
+        const regex = /^[0-9\b -]{0,13}$/;
+        if(regex.test(e.target.value)){
+            setCallNum({callNum : e.target.value,})
+            }
     }
+    useEffect(()=>{
+        // if(callNum.callNum.length === 10){
+        //     setCallNum({
+        //         callNum : callNum.callNum.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')
+        //     });
+        // }
+        if(callNum.callNum.length === 11){
+            setCallNum({
+                callNum : callNum.callNum.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3')
+            })
+        }
+        if(password.password === rePassword.rePassword && password.password.length>=1){
+           setCorrect("일치");
+        }else{
+            setCorrect("불일치");
+        }
+    },[callNum.callNum,rePassword.rePassword]);
+
+    const sellerNameHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{setSellerName({sellerName : e.target.value,})}
+    const emailHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{setEmail({email : e.target.value,})}
+    const passwordHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{setPassword({password : e.target.value,})}
+    const repasswordHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{setRepassword({rePassword : e.target.value,})}
 
     const  isSelectedImg = (e:React.ChangeEvent<HTMLInputElement>)=>{
         e.preventDefault();
@@ -89,68 +76,36 @@ function SignUp({}:signupProps){
         reader.readAsDataURL(file);
     }
 
-    const idCorrectHandler = () =>{
-
-        setCheck({
-
-            ...check,
-
-            idCheck : true,
-
-    })
-
-        alert("사용 가능 한 아이디 입니다.");
-
-}
-
-const allFieldCheckHandler = () =>{
-
-    if(seller.call === undefined || seller.name === undefined  || seller.password === undefined){
-
-        return false;
-
+    //이메일 유효성 검사
+    const emailCorrectHandler = async() =>{
+        let re = /\S+@\S+\.\S+/;
+        let emailTest = re.test(email.email);
+        if(emailTest){
+            f2.append('email',email.email);
+            //통과
+            let flag = await(duplicate(f2));
+            if(flag){
+                alert("사용 가능한 이메일 입니다!");
+                emailFlag = true;
+            }else{
+                alert("중복 된 이메일 입니다!")
+            }
         }else{
-
-            setCheck({
-
-                ...check,
-
-                allFieldCheck : true,
-
-        })
+            //실패
+            alert("이메일 형식이 잘못 되었습니다.")
+        }
+        
 
     }
 
-}
 
-const passwordCorrectHandler = (e:React.ChangeEvent<HTMLInputElement>)=>{
-
-//유효성검사 추가 중복 등.
-
-//1. call number valid
-
-//2. name number valid
-
-//3. password valid
-
-//4. password correction valid
-
-if(seller.password === e.target.name){
-
-setCheck({
-
-...check,
-
-passwordCheck : true,
-
-})
-
-}else{
-
-}
-
-return true;
-
+const checkInputs= async() => {
+    let re = /\S+@\S+\.\S+/;
+    let emailTest = re.test(email.email);
+    let pwTest = password.password.length >= 8 && password.password.length <= 50 && password.password === rePassword.rePassword
+    let af = sellerName.sellerName.length >=2 && callNum.callNum.length >=8 
+    f.append('email',email.email);f.append('call',callNum.callNum);f.append('name',sellerName.sellerName);f.append('pwd',password.password);
+    return (emailTest && pwTest && af);
 }
 
 return(
@@ -162,37 +117,24 @@ return(
 <div className="imgContainer">{$imagePreview}</div>
 <input type="file" onChange={isSelectedImg}/>
 
-<p>전화번호 : <input type="text" onChange={signupHandler} value={seller.call} name="call"/></p>
-
-<p>상호명 : <input type="text" onChange={signupHandler} value={seller.name} name="name"/><button type="button" onClick={idCorrectHandler}>확인</button></p>
-
-
-<p>E-mail : <input type="text" onChange={signupHandler} value={seller.email} name="email"/></p>
-
-
-<p>비밀번호 : <input type="password" onChange={signupHandler} value={seller.password} name="password"/></p>
-
-<p>비밀번호확인 : <input type="password" onChange={passwordCorrectHandler} name="passwordCorrect"/></p>  {/*유효성 검사*/}
+<p>전화번호 : <input type="text" onChange={callNumHandler} value={callNum.callNum} name="call"/></p>
+<p>상호명 : <input type="text" onChange={sellerNameHandler} value={sellerName.sellerName} name="name"/></p>
+<p>E-mail : <input type="text" onChange={emailHandler} value={email.email} name="email"/><button type="button" onClick={emailCorrectHandler}>확인</button></p>
+<p>비밀번호 : <input type="password" onChange={passwordHandler} value={password.password} name="password"/></p>
+<p>비밀번호확인 : <input type="password" onChange={repasswordHandler} value={rePassword.rePassword}/>{<div>{correct}</div>}</p>  {/*유효성 검사*/}
 
 <button
 
 onClick={()=>
 
 {
-    signup(seller);
-//post
-
-// allFieldCheckHandler();
-// if(check.allFieldCheck === true && check.idCheck === true && check.passwordCheck === true){
-
-
-
-// }else{
-
-// alert("wrong info.")
-
-// }
-
+    if(checkInputs()&&emailFlag){
+        signup(f);
+        alert("회원가입이 완료되었습니다!");
+        history.replace('/');
+    }else{
+        alert("Sign up Error");
+    }
  }
 
 }>등록</button>

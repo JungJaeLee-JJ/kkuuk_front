@@ -9,11 +9,6 @@ const defaultContext : ISellerContext = {
         sellerSet:()=>{},
 }
 
-// declare namespace JSX {
-//     interface IntrinsicElements{
-//         sellerProvider : any;
-//     }
-// }
 
 const SellerContext = createContext(defaultContext);
 
