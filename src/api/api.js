@@ -1,6 +1,7 @@
 import {uri} from "./config.js";
 
 import axios from 'axios';
+import { enumNumberMember } from "@babel/types";
 
 
 
@@ -9,15 +10,12 @@ export const signup = async(f) => {
     console.log(res);
 }
 
-export const getSeller = () => axios.get(`${uri}`).then((res)=>res.data);
-
 //서버 완성되면 post로 요청 바꿈, view에서 일치여부 판단.
 
-export const logIn = async(member)=>{
-    const response = await axios.post(`${uri}/login`,{
-        email : member.email,
-        pwd : member.password
-    });
+export const logIn = async(f)=>{
+    const response = await axios.post(`${uri}/login`,f);
+    axios.defaults.headers.common["Authorization"] = `Token ${response.data.data.token}`;
+    //document.cookie = `키이름=${response.data.data.token}`;
     console.log(response);
     
     // const users = response.data;
@@ -26,18 +24,31 @@ export const logIn = async(member)=>{
     // if(!user||user.password !== member.password){
     //     throw new Error("아이디 또는 비밀번호가 일치하지 않습니다.");
     // }
-     return null;
+     return response.data.data;
 }
 
 //회원조회
+export const lookup = async(f)=>{
+    //f => seller Email(pk), name, callNum
+    const response = await axios.post(`${uri}/getclient`,f);
+    const clients = response.data.data;
+    console.log(clients);
+    return clients;
+} 
 
 //회원적립
+export const earn = async(f) => {
+    const response = await axios.post(`${uri}/accstamp`,f);
+    console.log(response);
+    return response;
+}
 
 //회원추가
 
 export const enroll = async(member)=>{
     const response = await axios.post(`${uri}/addclient`,member);
     console.log(response);
+    return response;
 }
 
 //중복체크

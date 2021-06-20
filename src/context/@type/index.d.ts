@@ -1,7 +1,7 @@
 interface ISellerInfo {
     username : string;
     email : string;
-    picture : string;
+    ACCESS_TOKEN : string;
     
 }
 

@@ -1,40 +1,33 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
-import {getSeller,enroll} from "../api/api.js";
+import {enroll,lookup,earn} from "../api/api.js";
 import {SellerContext} from "../context/seller";
+
+import Button from '@material-ui/core/Button';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import { formatMs, makeStyles } from '@material-ui/core/styles';
+import Copyright from '../components/copyright.js';
+import HeaderBar from '../components/header.js';
+import { FormControlLabel, Radio } from '@material-ui/core';
 
 type MainProps = {
 
 }
 
-type sellerProps = {
-
-    sellerName : string | undefined;
-
-    totalMember : undefined | number;
-
-    totalPoint : number | undefined;
-
-}
-
 type memberProps = {
     email : string;
-
     name : string;
-
     callNum : string;
-
 }
 
 type memberPointProps = {
-
+    email : string;
     name : string;
-
     callNum : string;
-
     point : number;
-
 }
 
 function Main({}:MainProps){
@@ -42,27 +35,43 @@ function Main({}:MainProps){
     const {sellerInfo,setSellerInfo} = useContext<ISellerContext>(SellerContext);
 
     let history = useHistory();
-    let f = new FormData();
+    let f = new FormData();//member
+    let f2 = new FormData();//point
 
     const [member,setMember] = useState<memberProps>({
-        email : "seller@naver.com",
-
+        email : sellerInfo?.email as string,
         name : "",
-
         callNum : ""
-
     });
-
-    const [memberPoint, setMemberPoint] = useState<memberPointProps>({
-
+    const [targetMember,setTargetMember] = useState<memberProps>({
+        email : sellerInfo?.email as string,
         name : "",
-
+        callNum : ""
+    });
+    const [memberPoint, setMemberPoint] = useState<memberPointProps>({
+        email : sellerInfo?.email as string,
+        name : "",
         callNum : "",
-
         point : 0,
-
+    });
+    const [memberUsePoint, setMemberUsePoint] = useState<memberPointProps>({
+        email : sellerInfo?.email as string,
+        name : "",
+        callNum : "",
+        point : 0,
     });
 
+    const [myClient, setMyClient] = useState<any[]>([]);
+
+    
+
+    //고객 등록
+    const joinmemberHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
+        setMember({
+        ...member,
+        [e.target.name] : e.target.value,
+        })
+    }
     const callNumHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
         const regex = /^[0-9\b -]{0,4}$/;
         if(regex.test(e.target.value)){
@@ -70,133 +79,294 @@ function Main({}:MainProps){
                 callNum : e.target.value,})
             }
     }
-
-    //seller의 정보 조회
-
-    // useEffect(()=>{
-
-    // getSeller().then((data: React.SetStateAction<sellerProps>)=>setSeller(data));
-
-    // },[]);
-
-    //member 인풋 상태 변화 state에 저장
-
-
-    const joinmemberHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
-
-        setMember({
-
-        ...member,
-
-        [e.target.name] : e.target.value,
-
-        })
-
-    }
-
-    const memberPointHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
-
-        setMemberPoint({
-
-        ...memberPoint,
-
-        [e.target.name] : e.target.value,
-
-        })
-
-    }
     const checkInputs=()=>{
         const name = member.name.length >=1;
-        const bnum = member.callNum.length >=0;
-        f.append('email',"akrnote@nate.com");
+        const bnum = member.callNum.length ==4;
+        f.append('email',member.email);
         f.append('name',member.name);
         f.append('last_4_digit',member.callNum);
         return (name && bnum)
     }
+    //고객 조회
+    const lookupmemberHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
+        setTargetMember({
+        ...targetMember,
+        [e.target.name] : e.target.value,
+        })
+    }
+    const lookupcallNumHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
+        const regex = /^[0-9\b -]{0,4}$/;
+        if(regex.test(e.target.value)){
+            setTargetMember({...targetMember,
+                callNum : e.target.value,})
+            }
+    }
+    const checkLookupInputs=()=>{
+        const name = targetMember.name.length >=1;
+        const bnum = targetMember.callNum.length ==4;
+        f.append('email',targetMember.email);
+        f.append('last_4_digit',targetMember.callNum);
+        return (name && bnum)
+    }
+    //포인트 적립
+    const memberPointHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
+        setMemberPoint({
+        ...memberPoint,
+        [e.target.name] : e.target.value,
+        })
+    }
+    const checkPointInputs=()=>{
+        const name = memberPoint.name.length>=1;
+        const bnum = memberPoint.callNum.length==4;
+        const pt = memberPoint.point>0;
+        f2.append('val',memberPoint.point as any);
+        f2.append('last_4_digit',memberPoint.callNum);
+        f2.append('name',memberPoint.name);
+        f2.append('email',memberPoint.email);
+        return (name&&bnum&&pt);
+    }
+    //포인트 사용
+    const memberUsePointHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
+        setMemberUsePoint({
+        ...memberUsePoint,
+        [e.target.name] : e.target.value,
+        })
+    }
+    const checkUsePointInputs=()=>{
+        const name = memberUsePoint.name.length>=1;
+        const bnum = memberUsePoint.callNum.length==4;
+        const pt = memberPoint.point>0;
+        f2.append('val',memberUsePoint.point*-1 as any);
+        f2.append('last_4_digit',memberUsePoint.callNum);
+        f2.append('name',memberUsePoint.name);
+        f2.append('email',memberUsePoint.email);
+        return (name&&bnum);
+    }
+    //valid
+    
+    
 
     const logout = () =>{
         setSellerInfo(undefined);
         history.replace('/');
     }
 
+    //style
+    const useStyle = makeStyles((theme)=>({
+        paper:{
+            marginTop : theme.spacing(20),
+        display : 'flex',
+        flexDirection : 'column',
+        alignItems : 'center',
+        },
+        clientbox : {
+            display : 'flex',
+            justifyContent : 'center',
+        },
+        submit: {
+            margin: theme.spacing(3, 0, 2),
+          },
+        pointmainbox : {
+            display : 'flex',
+            flexDirection : 'row',
+            justifyContent : 'stretch',
+                },
+        pointsubbox : {
+            display : 'flex',
+            flexDirection : 'column',
+            alignItems : 'center',
+        }
+    }));
+    const classes = useStyle();
+
 return(
 
-    <section className="container">
+    <>
+    <CssBaseline/>
+    <HeaderBar/>
+    {(sellerInfo?.email===undefined)? <p>Loading</p>:
+    <div className={classes.paper}>
+        <Typography component="h1" variant="h5">
+                    {`${sellerInfo.username} 님 환영합니다!`}
+                </Typography>
+        <div className={classes.clientbox}>
+            <form noValidate>
+                <Typography component="h1" variant="h5">
+                    고객등록
+                </Typography>
+                <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            label="이름"
+                            name="name"
+                            value={member.name}
+                            onChange={joinmemberHandler}
+                            autoFocus
+                />
+                <TextField
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                label="전화번호 뒷 4자리"
+                                name="callNum"
+                                value={member.callNum}
+                                onChange={callNumHandler}
+                                autoFocus
+                />
+                <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    className={classes.submit}
+                    onClick={async ()=>{
+                        if(checkInputs()){
+                            const res = await enroll(f);
+                            const msg = res.data.msg;
+                            if(msg==="이미 가입된 고객입니다."){
+                                alert("이미 가입 된 고객 입니다.");
+                            }else{
+                                alert(`환영 합니다 ${member.name}님!`)
+                            }
+                        }else{
+                            alert("Error");
+                        }
+                    }}>
+                        추가
+                    </Button>
+            </form>
+        </div>
+        <div className={classes.clientbox}>
+            <form noValidate>
+                <Typography component="h1" variant="h5">
+                    고객조회
+                </Typography>
+                <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            label="이름"
+                            name="name"
+                            value={targetMember.name}
+                            onChange={lookupmemberHandler}
+                            autoFocus
+                />
+                <TextField
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                label="전화번호 뒷 4자리"
+                                name="callNum"
+                                value={targetMember.callNum}
+                                onChange={lookupcallNumHandler}
+                                autoFocus
+                />
+                <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    className={classes.submit}
+                    onClick={async()=>{
+                        if(checkLookupInputs()){
+                        setMyClient(await lookup(f));//고객 list 저장
+                        }else{
+                            alert("올바른 입력을 해주세요");
+                        }
+                    }}>
+                        조회
+                    </Button>
+            </form>
+        </div>
+        <div className={classes.pointmainbox}>
+            <Typography component="h1" variant="h5">
+                고객 목록
+            </Typography>
+            <div className={classes.pointsubbox}>
+                    {
+                        myClient && myClient.map((value,key)=>{
+                            return(
+                                <div><input type="radio" name={targetMember.callNum} value={value.name} onClick={()=>{
+                                    setMemberPoint({
+                                        ...memberPoint,
+                                        name : value.name,
+                                        callNum : targetMember.callNum,
+                                    });
+                                    setMemberUsePoint({
+                                        ...memberUsePoint,
+                                        name : value.name,
+                                        callNum : targetMember.callNum,
+                                    });
+                                }}/>{`뒷자리 : ${targetMember.callNum} 이름 : ${value.name} 쿠폰 개수 : ${value.stamp}`}</div>
+                            )
+                        })
+                        // radio chk logic
+                    }
+            </div>
+            <div className={classes.pointmainbox}>
+                    <TextField
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                label="적립 개수"
+                                name="point"
+                                value={memberPoint.point}
+                                onChange={memberPointHandler}
+                                type="number"
+                                autoFocus
+                    />
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        onClick={()=>{
+                            if(checkPointInputs()){
+                                earn(f2);
+                            }else{
+                                alert("error");
+                            }
+                        }}
+                    >적립</Button>
+                    <TextField
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                label="사용 개수"
+                                name="point"
+                                value={memberUsePoint.point}
+                                onChange={memberUsePointHandler}
+                                type="number"
+                                autoFocus
+                    />
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        onClick={()=>{
+                            if(checkUsePointInputs()){
+                                earn(f2);
+                            }else{
+                                alert("error");
+                            }
 
-        {(sellerInfo?.email===undefined)? <p>Loading</p>:
-
-            <div>
-
-                <div>
-                    <button onClick={logout} >로그아웃</button>
-
-                    {/* useEffect => get 으로 회원정보 보여줌.*/ }
-
-                    <h3>{`업체명 : ${sellerInfo?.username}`}</h3>
-
-                    <p>{`회원 수 : 0`}</p>
-
-                    <p>{`총 포인트 : 0`}</p>
-
-                    </div>
-
-                    <div>
-
-                        {/*POST 추가*/}
-
-                        {/*POST 시 다시 GET요청 or db에만 적용하고 렌더되는 메모리 상으로 임의로 바꿔줌*/}
-
-                        <h3>회원추가</h3>
-
-                        <p>전화번호(끝 4자리)<input type="text" onChange={callNumHandler} value={member.callNum} name="callNum"/></p>
-
-                        <p>이름<input type="text" onChange={joinmemberHandler} value={member.name} name="name"/></p>
-
-                        <button
-                            onClick={()=>{
-                                if(checkInputs()){
-                                    enroll(f);
-                                }else{
-                                    alert("Error");
-                                }
-                            }}
-                        >추가</button>
-
-                    </div>
-
-                    <div>
-
-                        <h3>적립</h3>
-
-                        <p>전화번호(끝 4자리)<input type="text"/></p>
-
-                        <button>조회</button>
-
-                        <p>적립액<input type="text" onChange={memberPointHandler} value={memberPoint.point*-1} name="point"/></p>
-
-                        <button>적립</button>
-
-                        </div>
-
-                    <div>
-
-                    <h3>사용</h3>
-
-                    <p>전화번호(끝 4자리)<input type="text"/></p>
-
-                    <button>조회</button>
-
-                    <p>사용액<input type="text" onChange={memberPointHandler} value={memberPoint.point} name="point"/></p>
-
-                    <button>사용</button>
-
-                </div>
+                            //useEffect 현재 포인트 초과 금지 logic 추가
+                        }}
+                    >사용</Button>
 
             </div>
-
-        }
-
-    </section>
+        </div>
+        <Copyright/>
+    </div>
+    
+    }
+    </>
 
     )
 
