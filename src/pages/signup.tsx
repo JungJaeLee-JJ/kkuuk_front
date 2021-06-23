@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import {signup,duplicate} from "../api/api";
@@ -11,15 +11,18 @@ import Typography from '@material-ui/core/Typography';
 import { formatMs, makeStyles } from '@material-ui/core/styles';
 import Copyright from '../components/copyright.js';
 import HeaderBar from '../components/header.js';
+import { SellerContext } from '../context/seller';
+import CustomModal from '../components/modal';
 
 function SignUp(){
 
 //state
-
+    const {sellerModal,setSellerModal} = useContext<ISellerContext>(SellerContext);
 
     const [callNum,setCallNum] = useState({callNum : ""});
     const [sellerName,setSellerName] = useState({sellerName : ""});
     const [email,setEmail] = useState({email : ""});
+    const [validEmail,setValidEmail] = useState(false);
     const [password,setPassword] = useState({password : ""});
     const [rePassword,setRepassword] = useState({rePassword : ""});
     const [imgUrl, setImgUrl] = useState({
@@ -30,7 +33,6 @@ function SignUp(){
     let f = new FormData();
     let f2 = new FormData();
     let passwordFlag = false;
-    let emailFlag = false;
     let history = useHistory();
     let {imagePreviewUrl} = imgUrl;
     let $imagePreview: {} | null | undefined = null;
@@ -92,14 +94,14 @@ function SignUp(){
             //통과
             let flag = await(duplicate(f2));
             if(flag){
-                alert("사용 가능한 이메일 입니다!");
-                emailFlag = true;
+                setSellerModal({onoff : true, msg : "사용 가능 합니다."});
+                setValidEmail(true);
             }else{
-                alert("중복 된 이메일 입니다!")
+                setSellerModal({onoff : true, msg : "중복된 이메일 입니다."});
             }
         }else{
             //실패
-            alert("이메일 형식이 잘못 되었습니다.")
+            setSellerModal({onoff : true, msg : "이메일 형식이 잘못되었습니다."});
         }
         
 
@@ -112,6 +114,7 @@ const checkInputs= async() => {
     let pwTest = password.password.length >= 8 && password.password.length <= 50 && password.password === rePassword.rePassword
     let af = sellerName.sellerName.length >=2 && callNum.callNum.length >=8 
     f.append('email',email.email);f.append('call',callNum.callNum);f.append('username',sellerName.sellerName);f.append('password',password.password);
+
     return (emailTest && pwTest && af);
 }
 
@@ -214,17 +217,20 @@ return(
                 onClick={()=>
 
                     {
-                        if(checkInputs()&&emailFlag){
+                        if(checkInputs()&&validEmail){
                             signup(f);
-                            alert("회원가입이 완료되었습니다!");
-                            history.replace('/');
+                            if(sellerModal.onoff ===false){
+                                history.replace('/index');
+                            }
+                            
                         }else{
-                            alert("Sign up Error");
+                            setSellerModal({onoff : true, msg : "회원 가입 실패입니다!."});
                         }
                      }
                 }
             >회원가입</Button>
         </form>
+        {sellerModal.onoff? <CustomModal/> : <></>}
     </div>
     <Copyright/>
 </div>

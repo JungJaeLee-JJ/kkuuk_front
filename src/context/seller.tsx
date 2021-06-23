@@ -1,11 +1,10 @@
-import { isPending } from 'q';
 import React, {createContext, useState} from 'react';
-import { useHistory } from 'react-router-dom';
-import {logIn} from '../api/api.js';
 
 const defaultContext : ISellerContext = {
         sellerInfo: undefined,
         setSellerInfo : undefined,
+        sellerModal : {onoff : false, msg : ""},
+        setSellerModal : undefined,
         sellerSet:()=>{},
 }
 
@@ -18,12 +17,10 @@ interface Props{
 
 const SellerContextProvider = ({children}:Props) => {
     const [sellerInfo, setSellerInfo] = useState<ISellerInfo | undefined>(undefined);
-
-
-    const logout = () =>{
-
-    }
-
+    const [sellerModal, setSellerModal] = useState<ISellerModal>({
+        onoff : false,
+        msg : "",
+    })
     const sellerSet = () =>{
 
     }
@@ -32,6 +29,8 @@ const SellerContextProvider = ({children}:Props) => {
         value = {{
             sellerInfo,
             setSellerInfo,
+            sellerModal,
+            setSellerModal,
             sellerSet
         }}
     >

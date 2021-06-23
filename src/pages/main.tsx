@@ -3,6 +3,7 @@ import { useHistory } from 'react-router';
 
 import {enroll,lookup,earn} from "../api/api.js";
 import {SellerContext} from "../context/seller";
+import CustomModal from "../components/modal";
 
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -33,6 +34,7 @@ type memberPointProps = {
 function Main({}:MainProps){
     
     const {sellerInfo,setSellerInfo} = useContext<ISellerContext>(SellerContext);
+    const {sellerModal,setSellerModal} = useContext<ISellerContext>(SellerContext);
 
     let history = useHistory();
     let f = new FormData();//member
@@ -62,6 +64,10 @@ function Main({}:MainProps){
     });
 
     const [myClient, setMyClient] = useState<any[]>([]);
+    const [onModal, setOnModal] = useState({
+        onoff : false,
+        msg : "",
+    });
 
     
 
@@ -81,7 +87,7 @@ function Main({}:MainProps){
     }
     const checkInputs=()=>{
         const name = member.name.length >=1;
-        const bnum = member.callNum.length ==4;
+        const bnum = member.callNum.length ===4;
         f.append('email',member.email);
         f.append('name',member.name);
         f.append('last_4_digit',member.callNum);
@@ -103,7 +109,7 @@ function Main({}:MainProps){
     }
     const checkLookupInputs=()=>{
         const name = targetMember.name.length >=1;
-        const bnum = targetMember.callNum.length ==4;
+        const bnum = targetMember.callNum.length ===4;
         f.append('email',targetMember.email);
         f.append('last_4_digit',targetMember.callNum);
         return (name && bnum)
@@ -117,7 +123,7 @@ function Main({}:MainProps){
     }
     const checkPointInputs=()=>{
         const name = memberPoint.name.length>=1;
-        const bnum = memberPoint.callNum.length==4;
+        const bnum = memberPoint.callNum.length===4;
         const pt = memberPoint.point>0;
         f2.append('val',memberPoint.point as any);
         f2.append('last_4_digit',memberPoint.callNum);
@@ -134,15 +140,22 @@ function Main({}:MainProps){
     }
     const checkUsePointInputs=()=>{
         const name = memberUsePoint.name.length>=1;
-        const bnum = memberUsePoint.callNum.length==4;
+        const bnum = memberUsePoint.callNum.length===4;
         const pt = memberPoint.point>0;
         f2.append('val',memberUsePoint.point*-1 as any);
         f2.append('last_4_digit',memberUsePoint.callNum);
         f2.append('name',memberUsePoint.name);
         f2.append('email',memberUsePoint.email);
-        return (name&&bnum);
+        return (name&&bnum&&pt);
     }
-    //valid
+    //useeffect
+    // useEffect(()=>{
+    //     // setSellerInfo({
+    //     //     email : document.cookie.get("email"),
+    //     // })
+    //     console.log(cookies);
+
+    // },[sellerInfo])    
     
     
 
@@ -226,9 +239,9 @@ return(
                             const res = await enroll(f);
                             const msg = res.data.msg;
                             if(msg==="이미 가입된 고객입니다."){
-                                alert("이미 가입 된 고객 입니다.");
+                                setSellerModal({onoff : true, msg : "이미 존재하는 고객입니다."});
                             }else{
-                                alert(`환영 합니다 ${member.name}님!`)
+                                setSellerModal({onoff : true, msg : `환영 합니다 ${member.name}님!`});
                             }
                         }else{
                             alert("Error");
@@ -274,7 +287,7 @@ return(
                         if(checkLookupInputs()){
                         setMyClient(await lookup(f));//고객 list 저장
                         }else{
-                            alert("올바른 입력을 해주세요");
+                            setSellerModal({onoff : true, msg : "올바른 입력을 해주세요."});
                         }
                     }}>
                         조회
@@ -327,9 +340,11 @@ return(
                         onClick={()=>{
                             if(checkPointInputs()){
                                 earn(f2);
+                                setSellerModal({onoff : true, msg : "포인트 적립이 완료되었습니다."});   
                             }else{
-                                alert("error");
+                                setSellerModal({onoff : true, msg : "서버 에러"});
                             }
+                            
                         }}
                     >적립</Button>
                     <TextField
@@ -352,13 +367,15 @@ return(
                         onClick={()=>{
                             if(checkUsePointInputs()){
                                 earn(f2);
+                                setSellerModal({onoff : true, msg : "포인트 사용이 완료되었습니다."});
                             }else{
-                                alert("error");
+                                setSellerModal({onoff : true, msg : "서버 에러"});
                             }
 
                             //useEffect 현재 포인트 초과 금지 logic 추가
                         }}
                     >사용</Button>
+                    {sellerModal?.onoff? <CustomModal/> : <></>}
 
             </div>
         </div>

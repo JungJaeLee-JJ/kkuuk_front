@@ -1,13 +1,13 @@
 import {uri} from "./config.js";
 
 import axios from 'axios';
-import { enumNumberMember } from "@babel/types";
 
 
 
 export const signup = async(f) => {
     const res = await axios.post(`${uri}/signup`,f);
     console.log(res);
+    return res.data;
 }
 
 //서버 완성되면 post로 요청 바꿈, view에서 일치여부 판단.
@@ -15,7 +15,8 @@ export const signup = async(f) => {
 export const logIn = async(f)=>{
     const response = await axios.post(`${uri}/login`,f);
     axios.defaults.headers.common["Authorization"] = `Token ${response.data.data.token}`;
-    //document.cookie = `키이름=${response.data.data.token}`;
+    document.cookie = `token=${response.data.data.token}`;
+    document.cookie = `email=${f.get("email")}`
     console.log(response);
     
     // const users = response.data;
