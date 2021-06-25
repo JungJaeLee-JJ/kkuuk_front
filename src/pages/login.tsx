@@ -1,5 +1,5 @@
 import React,{useState,useEffect,useContext} from "react";
-import { useHistory,Link } from "react-router-dom";
+import { useHistory,Link, NavLink } from "react-router-dom";
 
 import {logIn} from "../api/api";
 import {SellerContext} from "../context/seller";
@@ -202,9 +202,9 @@ function Login({}:loginProps){
                     <Grid container>
                         <Grid item>
                             <p>회원이 아니신가요? 
-                                <Link to="/signup">
+                                <NavLink to="/signup" replace>
                                 {"회원가입"}
-                                </Link>
+                                </NavLink>
                             </p>
                             
                         </Grid>

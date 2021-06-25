@@ -229,6 +229,15 @@ return(
                      }
                 }
             >회원가입</Button>
+            <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+                onClick={()=>{
+                    history.replace("/");
+                }}
+            >돌아가기</Button>
         </form>
         {sellerModal.onoff? <CustomModal/> : <></>}
     </div>

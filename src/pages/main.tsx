@@ -185,7 +185,7 @@ function Main({}:MainProps){
         }else if(sm!==null){
             sessionStorage.removeItem('Email');
         }
-        history.replace('/index');
+        history.replace('/');
     }
 
     //style
