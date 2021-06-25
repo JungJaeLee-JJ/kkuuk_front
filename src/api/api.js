@@ -12,11 +12,14 @@ export const signup = async(f) => {
 
 //서버 완성되면 post로 요청 바꿈, view에서 일치여부 판단.
 
-export const logIn = async(f)=>{
+export const logIn = async(f,v)=>{
     const response = await axios.post(`${uri}/login`,f);
     axios.defaults.headers.common["Authorization"] = `Token ${response.data.data.token}`;
-    document.cookie = `token=${response.data.data.token}`;
-    document.cookie = `email=${f.get("email")}`
+    if(v==="LOCAL"){
+        localStorage.setItem('Email',response.data.data.email);
+    }else{
+        sessionStorage.setItem('Email',response.data.data.email);
+    }
     console.log(response);
     
     // const users = response.data;

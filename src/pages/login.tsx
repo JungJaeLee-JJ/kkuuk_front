@@ -27,7 +27,7 @@ type loginProps = {
 };
 
 function Login({}:loginProps){
-    const {setSellerInfo} = useContext<ISellerContext>(SellerContext);
+    const {sellerInfo,setSellerInfo} = useContext<ISellerContext>(SellerContext);
     let history = useHistory();
     let f = new FormData();
     const [member,setMember] = useState<loginProps>({
@@ -37,6 +37,14 @@ function Login({}:loginProps){
         password : "",
 
     });
+
+    useEffect(()=>{
+        const ls = localStorage.getItem("Email");
+        if(ls!==null){
+            history.replace("/main");
+        }
+    },[])
+
     const loginHandler = (e:React.ChangeEvent<HTMLInputElement>)=>{
 
         setMember({
@@ -51,7 +59,7 @@ function Login({}:loginProps){
 
     const onSubmitAccount = async ()=>{
         try{
-            const seller = await logIn(f);
+            const seller = await logIn(f,sellerInfo?.ACCESS_TOKEN);
             setSellerInfo({
                  username : seller.username,
                  email : seller.email,
@@ -67,6 +75,13 @@ function Login({}:loginProps){
         f.append('email',member.email);
         f.append('password',member.password);
         return (a&&b);
+    }
+    //
+    const checkvalid = ()=>{
+        setSellerInfo({
+            ...sellerInfo,
+            ACCESS_TOKEN : "LOCAL"
+        })
     }
 
     //style
@@ -163,7 +178,7 @@ function Login({}:loginProps){
                             onChange={loginHandler}
                         />
                         <FormControlLabel
-                            control={<Checkbox value="remember" color="primary" />}
+                            control={<Checkbox id="remember" value="remember" color="primary" onClick={checkvalid} />}
                             label="로그인 상태 유지"
                         />
                     <Button

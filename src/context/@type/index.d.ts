@@ -1,6 +1,6 @@
 interface ISellerInfo {
-    username : string;
-    email : string;
+    username : string | undefined;
+    email : string | undefined;
     ACCESS_TOKEN : string;
     
 }

@@ -4,8 +4,10 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import axios from "axios";
+import Modal from 'react-modal';
 
 axios.defaults.withCredentials = true;
+Modal.setAppElement('div');
 
 ReactDOM.render(
   <React.StrictMode>

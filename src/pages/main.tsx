@@ -9,10 +9,10 @@ import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { formatMs, makeStyles } from '@material-ui/core/styles';
+import { formatMs, makeStyles, rgbToHex } from '@material-ui/core/styles';
 import Copyright from '../components/copyright.js';
 import HeaderBar from '../components/header.js';
-import { FormControlLabel, Radio } from '@material-ui/core';
+import ClipLoader from "react-spinners/ClipLoader";
 
 type MainProps = {
 
@@ -35,6 +35,8 @@ function Main({}:MainProps){
     
     const {sellerInfo,setSellerInfo} = useContext<ISellerContext>(SellerContext);
     const {sellerModal,setSellerModal} = useContext<ISellerContext>(SellerContext);
+    const lm = localStorage.getItem('Email');
+    const sm = sessionStorage.getItem('Email');
 
     let history = useHistory();
     let f = new FormData();//member
@@ -149,19 +151,41 @@ function Main({}:MainProps){
         return (name&&bnum&&pt);
     }
     //useeffect
-    // useEffect(()=>{
-    //     // setSellerInfo({
-    //     //     email : document.cookie.get("email"),
-    //     // })
-    //     console.log(cookies);
-
-    // },[sellerInfo])    
+    useEffect(()=>{
+        if(lm!==null){
+            //get요청
+            setSellerInfo({
+                ...sellerInfo,
+                email : localStorage.getItem('Email')
+            });
+            console.log(lm);
+        }
+        else if(sm!==null){
+            //get요청
+            setSellerInfo({
+                ...sellerInfo,
+                email : sessionStorage.getItem('Email')
+            })
+            console.log(sm);
+        }else{
+            setTimeout(()=>{
+                localStorage.removeItem('Email');
+                sessionStorage.removeItem('Email');
+                history.replace("/bad_request");
+            },5000)
+        }
+    },[]);    
     
     
 
     const logout = () =>{
         setSellerInfo(undefined);
-        history.replace('/');
+        if(lm!==null){
+            localStorage.removeItem('Email');
+        }else if(sm!==null){
+            sessionStorage.removeItem('Email');
+        }
+        history.replace('/index');
     }
 
     //style
@@ -197,11 +221,22 @@ return(
     <>
     <CssBaseline/>
     <HeaderBar/>
-    {(sellerInfo?.email===undefined)? <p>Loading</p>:
+    {(sellerInfo?.email===undefined)? 
+    <div style={{
+        display : 'flex',
+        alignContent : 'center',
+        justifyContent : 'center',
+    }}>
+        <div style={{marginTop:'300px'}}>
+    <ClipLoader color="rgb(255,156,155)" size={150} loading={true}/>
+    </div>
+    </div>
+    :
     <div className={classes.paper}>
         <Typography component="h1" variant="h5">
-                    {`${sellerInfo.username} 님 환영합니다!`}
+                    {`${sellerInfo.email} 님 환영합니다!`}
                 </Typography>
+                <button onClick={logout}>로그아웃</button>
         <div className={classes.clientbox}>
             <form noValidate>
                 <Typography component="h1" variant="h5">

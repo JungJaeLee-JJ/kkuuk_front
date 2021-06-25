@@ -15,6 +15,8 @@ const customStyles = {
     },
   };
 
+ 
+
   export default function CustomModal(){
       const {sellerModal,setSellerModal} = useContext<ISellerContext>(SellerContext);
       function closeModal() {
