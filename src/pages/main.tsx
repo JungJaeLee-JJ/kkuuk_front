@@ -13,6 +13,7 @@ import { formatMs, makeStyles, rgbToHex } from '@material-ui/core/styles';
 import Copyright from '../components/copyright.js';
 import HeaderBar from '../components/header.js';
 import ClipLoader from "react-spinners/ClipLoader";
+import axios from 'axios';
 
 type MainProps = {
 
@@ -37,6 +38,8 @@ function Main({}:MainProps){
     const {sellerModal,setSellerModal} = useContext<ISellerContext>(SellerContext);
     const lm = localStorage.getItem('Email');
     const sm = sessionStorage.getItem('Email');
+    const lt = localStorage.getItem('TOKEN');
+    const st = sessionStorage.getItem('TOKEN');
 
     let history = useHistory();
     let f = new FormData();//member
@@ -90,7 +93,7 @@ function Main({}:MainProps){
     const checkInputs=()=>{
         const name = member.name.length >=1;
         const bnum = member.callNum.length ===4;
-        f.append('email',member.email);
+        f.append('email',sellerInfo?.email as string);
         f.append('name',member.name);
         f.append('last_4_digit',member.callNum);
         return (name && bnum)
@@ -112,7 +115,7 @@ function Main({}:MainProps){
     const checkLookupInputs=()=>{
         const name = targetMember.name.length >=1;
         const bnum = targetMember.callNum.length ===4;
-        f.append('email',targetMember.email);
+        f.append('email',sellerInfo?.email as string);
         f.append('last_4_digit',targetMember.callNum);
         return (name && bnum)
     }
@@ -158,6 +161,7 @@ function Main({}:MainProps){
                 ...sellerInfo,
                 email : localStorage.getItem('Email')
             });
+            axios.defaults.headers.common["Authorization"] = `Token ${lt}`;
             console.log(lm);
         }
         else if(sm!==null){
@@ -165,7 +169,8 @@ function Main({}:MainProps){
             setSellerInfo({
                 ...sellerInfo,
                 email : sessionStorage.getItem('Email')
-            })
+            });
+            axios.defaults.headers.common["Authorization"] = `Token ${st}`;
             console.log(sm);
         }else{
             setTimeout(()=>{

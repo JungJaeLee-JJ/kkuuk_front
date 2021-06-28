@@ -17,8 +17,10 @@ export const logIn = async(f,v)=>{
     axios.defaults.headers.common["Authorization"] = `Token ${response.data.data.token}`;
     if(v==="LOCAL"){
         localStorage.setItem('Email',response.data.data.email);
+        localStorage.setItem('TOKEN',response.data.data.token);
     }else{
         sessionStorage.setItem('Email',response.data.data.email);
+        sessionStorage.setItem('TOKEN',response.data.data.token);
     }
     console.log(response);
     
@@ -37,6 +39,7 @@ export const lookup = async(f)=>{
     const response = await axios.post(`${uri}/getclient`,f);
     const clients = response.data.data;
     console.log(clients);
+    console.log(response);
     return clients;
 } 
 
