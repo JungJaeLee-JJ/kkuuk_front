@@ -4,6 +4,7 @@ import Login from "./pages/login";
 import SignUp from "./pages/signup";
 import Main from "./pages/main";
 import Profile from "./pages/profile";
+import Client from "./pages/client";
 import NotFound from "./pages/notFound";
 
 import {SellerContext, SellerContextProvider} from "./context/seller";
@@ -17,7 +18,7 @@ function App() {
       <Route path="/" exact component={Login} />
       <Route path="/signup" component={SignUp} />
       <Route path="/main" component={Main}/>
-      <Route path="/profile" component={Profile}/>
+      <Route path="/client/1" component={Client}/>
       <Route component={NotFound}/>
     </Switch>
     </BrowserRouter>
