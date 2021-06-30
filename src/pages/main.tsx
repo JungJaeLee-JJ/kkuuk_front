@@ -187,8 +187,10 @@ function Main({}:MainProps){
         setSellerInfo(undefined);
         if(lm!==null){
             localStorage.removeItem('Email');
+            localStorage.removeItem('TOKEN');
         }else if(sm!==null){
             sessionStorage.removeItem('Email');
+            sessionStorage.removeItem('TOKEN');
         }
         history.replace('/');
     }

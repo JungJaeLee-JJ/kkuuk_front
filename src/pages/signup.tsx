@@ -184,6 +184,9 @@ return(
                             autoFocus
             />
             <Button
+            fullWidth
+            variant="contained"
+            color="primary"
                 onClick={emailCorrectHandler}
             >중복검사</Button>
             <TextField
@@ -220,7 +223,7 @@ return(
                         if(checkInputs()&&validEmail){
                             signup(f);
                             if(sellerModal.onoff ===false){
-                                history.replace('/index');
+                                history.replace('/');
                             }
                             
                         }else{
