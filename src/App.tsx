@@ -6,6 +6,7 @@ import Main from "./pages/main";
 import Profile from "./pages/profile";
 import Client from "./pages/client";
 import NotFound from "./pages/notFound";
+import './App.css';
 
 import {SellerContext, SellerContextProvider} from "./context/seller";
 

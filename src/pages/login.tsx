@@ -1,8 +1,9 @@
-import React,{useState,useEffect,useContext} from "react";
-import { useHistory,Link, NavLink } from "react-router-dom";
+import React, {useState, useEffect, useContext} from "react";
+import {useHistory, Link, NavLink} from "react-router-dom";
 
 import {logIn} from "../api/api";
 import {SellerContext} from "../context/seller";
+import Image from '../asset/login.jpg';
 
 
 import Button from '@material-ui/core/Button';
@@ -12,219 +13,236 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import Copyright from '../components/copyright.js';
-
 
 
 type loginProps = {
 
-    email : string,
+    email: string,
 
-    password : string
+    password: string
 
 };
 
-function Login({}:loginProps){
-    const {sellerInfo,setSellerInfo} = useContext<ISellerContext>(SellerContext);
+function Login({}: loginProps) {
+    const {sellerInfo, setSellerInfo} = useContext<ISellerContext>(SellerContext);
     let history = useHistory();
     let f = new FormData();
-    const [member,setMember] = useState<loginProps>({
+    const [member, setMember] = useState<loginProps>({
 
-        email : "",
+        email: "",
 
-        password : "",
+        password: "",
 
     });
 
-    useEffect(()=>{
+    useEffect(() => {
         const ls = localStorage.getItem("Email");
-        if(ls!==null){
+        if (ls !== null) {
             history.replace("/main");
         }
-    },[])
+    }, [])
 
-    const loginHandler = (e:React.ChangeEvent<HTMLInputElement>)=>{
+    const loginHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
 
         setMember({
 
-        ...member,
+            ...member,
 
-        [e.target.name] : e.target.value,
+            [e.target.name]: e.target.value,
 
         })
 
     }
 
-    const onSubmitAccount = async ()=>{
-        try{
-            const seller = await logIn(f,sellerInfo?.ACCESS_TOKEN);
+    const onSubmitAccount = async () => {
+        try {
+            const seller = await logIn(f, sellerInfo?.ACCESS_TOKEN);
             setSellerInfo({
-                 username : seller.username,
-                 email : seller.email,
+                username: seller.username,
+                email: seller.email,
             });
             history.replace("/main");
-        }catch(e){
-           window.alert(e);
+        } catch (e) {
+            window.alert(e);
         }
     }
     const checkInputs = () => {
-        let a = member.email.length >=1;
-        let b = member.password.length >=7;
-        f.append('email',member.email);
-        f.append('password',member.password);
-        return (a&&b);
+        let a = member.email.length >= 1;
+        let b = member.password.length >= 7;
+        f.append('email', member.email);
+        f.append('password', member.password);
+        return (a && b);
     }
     //
-    const checkvalid = ()=>{
+    const checkvalid = () => {
         setSellerInfo({
             ...sellerInfo,
-            ACCESS_TOKEN : "LOCAL"
+            ACCESS_TOKEN: "LOCAL"
         })
     }
 
     //style
     const useStyles = makeStyles((theme) => ({
         paper: {
-          marginTop: theme.spacing(20),
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          border : '5pt groove #3f51b5',
-          height : 'auto',
+            // marginTop: theme.spacing(20),
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            border: '5pt groove #3f51b5',
+            height: 'auto',
 
         },
-        subpapar : {
-            display : 'flex',
-            flexDirection : 'row',
-            alignItems : 'center',
-            justifyContent : 'space-between',
-            height : '90%',
+        subpapar: {
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            height: '90%',
         },
-        backimgpaper : {
-
-        },
-        backpaper : {
-            display : 'flex',
-            borderRadius : '20px',
+        backimgpaper: {},
+        backpaper: {
+            display: 'flex',
+            // borderRadius : '20px',
             //backgroundColor : '#707070',
-            position : 'relative',
-            width : '60%',
+            position: 'relative',
+            width: '60%',
         },
-        loginbox : {
-            display:'flex',
+        loginbox: {
+            display: 'flex',
             //position : 'absolute',
             marginRight: theme.spacing(5),
-            justifyContent : 'center',
-
+            justifyContent: 'center',
+            maxWidth: '300px',
         },
-        kkuukbox : {
-            display : 'flex',
-            marginRight : theme.spacing(10),
+        kkuukbox: {
+            display: 'flex',
+            marginRight: theme.spacing(10),
         },
         avatar: {
-          margin: theme.spacing(1),
-          backgroundColor: theme.palette.secondary.main,
+            margin: theme.spacing(1),
+            backgroundColor: theme.palette.secondary.main,
         },
         form: {
-          width: '70%',
-          marginTop: theme.spacing(1),
+            width: '70%',
+            marginTop: theme.spacing(1),
         },
         submit: {
-          margin: theme.spacing(3, 0, 2),
+            margin: theme.spacing(3, 0, 2),
         },
-      }));
-      const classes = useStyles();
+    }));
+    const classes = useStyles();
 
 
-    return(
-
-    <>
-    {/* <Container component="main" maxWidth="lg"> */}
-        <CssBaseline/>
-        <div className={classes.paper}> 
-            <div className={classes.subpapar}>
-                <div className={classes.backpaper}>  
-                <div className={classes.loginbox} >
-                    <form className={classes.form} noValidate>
-                        <Typography component="h1" variant="h5">
-                            로그인
-                        </Typography>
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            value={member.email}
-                            autoComplete="email"
-                            onChange={loginHandler}
-                            autoFocus
-                        />
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="password"
-                            value={member.password}
-                            label="Password"
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                            onChange={loginHandler}
-                        />
-                        <FormControlLabel
-                            control={<Checkbox id="remember" value="remember" color="primary" onClick={checkvalid} />}
-                            label="로그인 상태 유지"
-                        />
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        className={classes.submit}
-                        onClick={()=>{
-                            if(checkInputs()){
-                                onSubmitAccount();
-                            }else{
-                                //alert("아이디 혹은 비밀번호를 확인 해주세요");
-                                <Box zIndex="modal">
-                                    아이디 혹은 비밀번호를 확인 해주세요
-                                </Box>
-                            }
-                        }}
-                    >
-                    로그인
-                    </Button>
-                    <Grid container>
-                        <Grid item>
-                            <p>회원이 아니신가요? 
-                                <NavLink to="/signup" replace>
-                                {"회원가입"}
-                                </NavLink>
-                            </p>
-                            
-                        </Grid>
-                    </Grid>
-                </form>
-            </div>
-            </div> 
-            <div className={classes.kkuukbox}>
-            <Typography component="h1" variant="h5">
-                간편한 쿠폰 적립 <br/> 꾸욱
-            </Typography>
-            </div>
+    return (
+        <div className="container-fluid" style={{minWidth:"100vw",minHeight:"100vh",backgroundImage:"url("+Image+")",backgroundSize:"cover",backgroundPosition:"center",overflowX:"hidden"}}>
+            <div className="flex-container">
+                <div className="col-sm-6 login-section-wrapper custom-login-wrapper" >
+                    <div className="brand-wrapper">
+                        <h1 className="subfont">꾸욱!</h1>
+                    </div>
+                    <div className="login-wrapper my-auto">
+                        <form action="#!">
+                            <div className="form-group">
+                                <label htmlFor="email">Email</label>
+                                <input type="email" name="email" id="email" className="form-control" placeholder="email@example.com" />
+                            </div>
+                            <div className="form-group mb-4">
+                                <label htmlFor="password">Password</label>
+                                <input type="password" name="password" id="password" className="form-control" placeholder="enter your passsword" />
+                            </div>
+                            <input name="login" id="login" className="btn btn-block login-btn" type="button" defaultValue="Login" style={{backgroundColor:"#FF7473"}} />
+                        </form>
+                        {/*<a href="#!" className="forgot-password-link">Forgot password?</a>*/}
+                        <p className="login-wrapper-footer-text">회원이 아니신가요? <a className="loginbutton">회원가입</a></p>
+                    </div>
+                </div>
+                {/*<div className="col-sm-6 px-0 d-none d-sm-block">*/}
+                {/*    <img src="images/cafe1.jpg" alt="login image" className="login-img" />*/}
+                {/*</div>*/}
             </div>
         </div>
-        <Box mt={8}>
-            <Copyright />
-        </Box>
-     {/* </Container> */}
 
-    </>
+        // <>
+        //     {/* <Container component="main" maxWidth="lg"> */}
+        //     <CssBaseline/>
+        //     <div className={classes.paper}>
+        //         <div className={classes.loginbox}>
+        //             <form className={classes.form} noValidate>
+        //                 <div>E-mail</div>
+        //                 <TextField
+        //                     variant="outlined"
+        //                     margin="none"
+        //                     required
+        //                     fullWidth
+        //                     id="email"
+        //                     // label="Email Address"
+        //                     name="email"
+        //                     value={member.email}
+        //                     autoComplete="email"
+        //                     onChange={loginHandler}
+        //                     autoFocus
+        //                     size="small"
+        //                 />
+        //                 <div>Password</div>
+        //                 <TextField
+        //                     variant="outlined"
+        //                     margin="none"
+        //                     required
+        //                     fullWidth
+        //                     name="password"
+        //                     value={member.password}
+        //                     // label="Password"
+        //                     type="password"
+        //                     id="password"
+        //                     autoComplete="current-password"
+        //                     onChange={loginHandler}
+        //                     size="small"
+        //                 />
+        //                 <FormControlLabel
+        //                     control={<Checkbox id="remember" value="remember" color="primary" onClick={checkvalid}/>}
+        //                     label="로그인 상태 유지"
+        //                 />
+        //                 <Button
+        //                     fullWidth
+        //                     variant="contained"
+        //                     color="primary"
+        //                     className={classes.submit}
+        //                     onClick={() => {
+        //                         if (checkInputs()) {
+        //                             onSubmitAccount();
+        //                         } else {
+        //                             //alert("아이디 혹은 비밀번호를 확인 해주세요");
+        //                             <Box zIndex="modal">
+        //                                 아이디 혹은 비밀번호를 확인 해주세요
+        //                             </Box>
+        //                         }
+        //                     }}
+        //                 >
+        //                     로그인
+        //                 </Button>
+        //                 <Grid container>
+        //                     <Grid item>
+        //                         <p>회원이 아니신가요?
+        //                             <NavLink to="/signup" replace>
+        //                                 {"회원가입"}
+        //                             </NavLink>
+        //                         </p>
+        //
+        //                     </Grid>
+        //                 </Grid>
+        //             </form>
+        //
+        //         </div>
+        //     </div>
+        //     <Box mt={8}>
+        //         <Copyright/>
+        //     </Box>
+        //     {/* </Container> */
+        //     }
+        //
+        // </>
 
     );
 

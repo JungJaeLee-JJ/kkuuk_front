@@ -1,3 +1,10 @@
+html {
+  font-family: sans-serif;
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -7,6 +14,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -15,18 +23,20 @@ code {
 @font-face {
   font-family: 'NanumSquareOTFBold';
   font-style: normal;
-  font-weight: 100; 
+  font-weight: 100;
   src: url('./Constants/fonts/NanumSquareOTFBold.otf') format('nanumb');
 }
 @font-face {
   font-family: 'NanumSquareOTFBold';
   font-style: normal;
-  font-weight: 100; 
+  font-weight: 100;
   src: url('./Constants/fonts/NanumSquareOTFRegular.ot.otf') format('nanumr');
 }
 @font-face {
   font-family: 'NanumSquareOTFBold';
   font-style: normal;
-  font-weight: 100; 
+  font-weight: 100;
   src: url('./Constants/fonts/ONE\ Mobile\ POP\ OTF.otf') format('om');
 }
+
+
