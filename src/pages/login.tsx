@@ -94,32 +94,6 @@ function Login({}: loginProps) {
             height: 'auto',
 
         },
-        subpapar: {
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            height: '90%',
-        },
-        backimgpaper: {},
-        backpaper: {
-            display: 'flex',
-            // borderRadius : '20px',
-            //backgroundColor : '#707070',
-            position: 'relative',
-            width: '60%',
-        },
-        loginbox: {
-            display: 'flex',
-            //position : 'absolute',
-            marginRight: theme.spacing(5),
-            justifyContent: 'center',
-            maxWidth: '300px',
-        },
-        kkuukbox: {
-            display: 'flex',
-            marginRight: theme.spacing(10),
-        },
         avatar: {
             margin: theme.spacing(1),
             backgroundColor: theme.palette.secondary.main,
@@ -136,116 +110,84 @@ function Login({}: loginProps) {
 
 
     return (
-        <div className="container-fluid" style={{minWidth:"100vw",minHeight:"100vh",backgroundImage:"url("+Image+")",backgroundSize:"cover",backgroundPosition:"center",overflowX:"hidden"}}>
+        <div className="container">
             <div className="flex-container">
-                <div className="col-sm-6 login-section-wrapper custom-login-wrapper" >
-                    <div className="brand-wrapper">
-                        <h1 className="subfont">꾸욱!</h1>
-                    </div>
-                    <div className="login-wrapper my-auto">
-                        <form action="#!">
-                            <div className="form-group">
-                                <label htmlFor="email">Email</label>
-                                <input type="email" name="email" id="email" className="form-control" placeholder="email@example.com" />
-                            </div>
-                            <div className="form-group mb-4">
-                                <label htmlFor="password">Password</label>
-                                <input type="password" name="password" id="password" className="form-control" placeholder="enter your passsword" />
-                            </div>
-                            <input name="login" id="login" className="btn btn-block login-btn" type="button" defaultValue="Login" style={{backgroundColor:"#FF7473"}} />
-                        </form>
-                        {/*<a href="#!" className="forgot-password-link">Forgot password?</a>*/}
-                        <p className="login-wrapper-footer-text">회원이 아니신가요? <a className="loginbutton">회원가입</a></p>
-                    </div>
+                <div className="login-wrapper">
+                    <form noValidate>
+                        <div id="title" style={{fontSize: "50px"}}>꾸욱!</div>
+                        <div>
+                            <div id="subColor">E-mail</div>
+                            <TextField
+                                className="inputText"
+                                variant="outlined"
+                                margin="none"
+                                required
+                                fullWidth
+                                id="email"
+                                // label="Email Address"
+                                name="email"
+                                value={member.email}
+                                autoComplete="email"
+                                onChange={loginHandler}
+                                autoFocus
+                                size="small"
+                            />
+                        </div>
+                        <div className="password">
+                            <div id="subColor">Password</div>
+                            <TextField
+                                className="inputText"
+                                variant="outlined"
+                                margin="none"
+                                required
+                                fullWidth
+                                name="password"
+                                value={member.password}
+                                // label="Password"
+                                type="password"
+                                id="password"
+                                autoComplete="current-password"
+                                onChange={loginHandler}
+                                size="small"
+                            />
+                        </div>
+                        <FormControlLabel style={{color:"#838383"}}
+                            control={<Checkbox id="remember" value="remember" color="primary"
+                                               onClick={checkvalid} />}
+                            label="로그인 상태 유지"
+                        />
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            onClick={() => {
+                                if (checkInputs()) {
+                                    onSubmitAccount();
+                                } else {
+                                    //alert("아이디 혹은 비밀번호를 확인 해주세요");
+                                    <Box zIndex="modal">
+                                        아이디 혹은 비밀번호를 확인 해주세요
+                                    </Box>
+                                }
+                            }}
+                        >
+                            로그인
+                        </Button>
+                        <Grid container>
+                            <Grid item>
+                                <p>회원이 아니신가요?
+                                    <NavLink to="/signup" replace style={{marginLeft:"10px",color:"#FF747",fontWeight:"bold"}}>
+                                        {"회원가입"}
+                                    </NavLink>
+                                </p>
+
+                            </Grid>
+                        </Grid>
+                    </form>
                 </div>
-                {/*<div className="col-sm-6 px-0 d-none d-sm-block">*/}
-                {/*    <img src="images/cafe1.jpg" alt="login image" className="login-img" />*/}
-                {/*</div>*/}
             </div>
         </div>
-
-        // <>
-        //     {/* <Container component="main" maxWidth="lg"> */}
-        //     <CssBaseline/>
-        //     <div className={classes.paper}>
-        //         <div className={classes.loginbox}>
-        //             <form className={classes.form} noValidate>
-        //                 <div>E-mail</div>
-        //                 <TextField
-        //                     variant="outlined"
-        //                     margin="none"
-        //                     required
-        //                     fullWidth
-        //                     id="email"
-        //                     // label="Email Address"
-        //                     name="email"
-        //                     value={member.email}
-        //                     autoComplete="email"
-        //                     onChange={loginHandler}
-        //                     autoFocus
-        //                     size="small"
-        //                 />
-        //                 <div>Password</div>
-        //                 <TextField
-        //                     variant="outlined"
-        //                     margin="none"
-        //                     required
-        //                     fullWidth
-        //                     name="password"
-        //                     value={member.password}
-        //                     // label="Password"
-        //                     type="password"
-        //                     id="password"
-        //                     autoComplete="current-password"
-        //                     onChange={loginHandler}
-        //                     size="small"
-        //                 />
-        //                 <FormControlLabel
-        //                     control={<Checkbox id="remember" value="remember" color="primary" onClick={checkvalid}/>}
-        //                     label="로그인 상태 유지"
-        //                 />
-        //                 <Button
-        //                     fullWidth
-        //                     variant="contained"
-        //                     color="primary"
-        //                     className={classes.submit}
-        //                     onClick={() => {
-        //                         if (checkInputs()) {
-        //                             onSubmitAccount();
-        //                         } else {
-        //                             //alert("아이디 혹은 비밀번호를 확인 해주세요");
-        //                             <Box zIndex="modal">
-        //                                 아이디 혹은 비밀번호를 확인 해주세요
-        //                             </Box>
-        //                         }
-        //                     }}
-        //                 >
-        //                     로그인
-        //                 </Button>
-        //                 <Grid container>
-        //                     <Grid item>
-        //                         <p>회원이 아니신가요?
-        //                             <NavLink to="/signup" replace>
-        //                                 {"회원가입"}
-        //                             </NavLink>
-        //                         </p>
-        //
-        //                     </Grid>
-        //                 </Grid>
-        //             </form>
-        //
-        //         </div>
-        //     </div>
-        //     <Box mt={8}>
-        //         <Copyright/>
-        //     </Box>
-        //     {/* </Container> */
-        //     }
-        //
-        // </>
-
     );
-
 }
 
 export default Login;

@@ -7,13 +7,31 @@ import Profile from "./pages/profile";
 import Client from "./pages/client";
 import NotFound from "./pages/notFound";
 import './App.css';
-
 import {SellerContext, SellerContextProvider} from "./context/seller";
+import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: '#FF7473',
+      main: '#FF7473',
+      dark: '#FF7473',
+      contrastText: '#fff',
+    },
+    secondary: {
+      light: '#ff7961',
+      main: '#f44336',
+      dark: '#ba000d',
+      contrastText: '#000',
+    },
+  },
+});
 
 function App() {
   const {sellerInfo} = useContext<ISellerContext>(SellerContext);
   return (
     <SellerContextProvider>
+      <ThemeProvider theme={theme}>
     <BrowserRouter>
     <Switch>
       <Route path="/" exact component={Login} />
@@ -23,6 +41,7 @@ function App() {
       <Route component={NotFound}/>
     </Switch>
     </BrowserRouter>
+      </ThemeProvider>
     </SellerContextProvider>
   );
 }
