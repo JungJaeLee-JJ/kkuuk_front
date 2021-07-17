@@ -1,8 +1,9 @@
-import React,{useState,useEffect,useContext} from "react";
-import { useHistory,Link, NavLink } from "react-router-dom";
+import React, {useState, useEffect, useContext} from "react";
+import {useHistory, Link, NavLink} from "react-router-dom";
 
 import {logIn} from "../api/api";
 import {SellerContext} from "../context/seller";
+import Image from '../asset/login.jpg';
 
 
 import Button from '@material-ui/core/Button';
@@ -12,222 +13,181 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import Copyright from '../components/copyright.js';
-
 
 
 type loginProps = {
 
-    email : string,
+    email: string,
 
-    password : string
+    password: string
 
 };
 
-function Login({}:loginProps){
-    const {sellerInfo,setSellerInfo} = useContext<ISellerContext>(SellerContext);
+function Login({}: loginProps) {
+    const {sellerInfo, setSellerInfo} = useContext<ISellerContext>(SellerContext);
     let history = useHistory();
     let f = new FormData();
-    const [member,setMember] = useState<loginProps>({
+    const [member, setMember] = useState<loginProps>({
 
-        email : "",
+        email: "",
 
-        password : "",
+        password: "",
 
     });
 
-    useEffect(()=>{
+    useEffect(() => {
         const ls = localStorage.getItem("Email");
-        if(ls!==null){
+        if (ls !== null) {
             history.replace("/main");
         }
-    },[])
+    }, [])
 
-    const loginHandler = (e:React.ChangeEvent<HTMLInputElement>)=>{
+    const loginHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
 
         setMember({
 
-        ...member,
+            ...member,
 
-        [e.target.name] : e.target.value,
+            [e.target.name]: e.target.value,
 
         })
 
     }
 
-    const onSubmitAccount = async ()=>{
-        try{
-            const seller = await logIn(f,sellerInfo?.ACCESS_TOKEN);
+    const onSubmitAccount = async () => {
+        try {
+            const seller = await logIn(f, sellerInfo?.ACCESS_TOKEN);
             setSellerInfo({
-                 username : seller.username,
-                 email : seller.email,
+                username: seller.username,
+                email: seller.email,
             });
             history.replace("/main");
-        }catch(e){
-           window.alert(e);
+        } catch (e) {
+            window.alert(e);
         }
     }
     const checkInputs = () => {
-        let a = member.email.length >=1;
-        let b = member.password.length >=7;
-        f.append('email',member.email);
-        f.append('password',member.password);
-        return (a&&b);
+        let a = member.email.length >= 1;
+        let b = member.password.length >= 7;
+        f.append('email', member.email);
+        f.append('password', member.password);
+        return (a && b);
     }
     //
-    const checkvalid = ()=>{
+    const checkvalid = () => {
         setSellerInfo({
             ...sellerInfo,
-            ACCESS_TOKEN : "LOCAL"
+            ACCESS_TOKEN: "LOCAL"
         })
     }
 
     //style
     const useStyles = makeStyles((theme) => ({
         paper: {
-          marginTop: theme.spacing(20),
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          border : '5pt groove #3f51b5',
-          height : 'auto',
+            // marginTop: theme.spacing(20),
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            border: '5pt groove #3f51b5',
+            height: 'auto',
 
-        },
-        subpapar : {
-            display : 'flex',
-            flexDirection : 'row',
-            alignItems : 'center',
-            justifyContent : 'space-between',
-            height : '90%',
-        },
-        backimgpaper : {
-
-        },
-        backpaper : {
-            display : 'flex',
-            borderRadius : '20px',
-            //backgroundColor : '#707070',
-            position : 'relative',
-            width : '60%',
-        },
-        loginbox : {
-            display:'flex',
-            //position : 'absolute',
-            marginRight: theme.spacing(5),
-            justifyContent : 'center',
-
-        },
-        kkuukbox : {
-            display : 'flex',
-            marginRight : theme.spacing(10),
         },
         avatar: {
-          margin: theme.spacing(1),
-          backgroundColor: theme.palette.secondary.main,
+            margin: theme.spacing(1),
+            backgroundColor: theme.palette.secondary.main,
         },
         form: {
-          width: '70%',
-          marginTop: theme.spacing(1),
+            width: '70%',
+            marginTop: theme.spacing(1),
         },
         submit: {
-          margin: theme.spacing(3, 0, 2),
+            margin: theme.spacing(3, 0, 2),
         },
-      }));
-      const classes = useStyles();
+    }));
+    const classes = useStyles();
 
 
-    return(
-
-    <>
-    {/* <Container component="main" maxWidth="lg"> */}
-        <CssBaseline/>
-        <div className={classes.paper}> 
-            <div className={classes.subpapar}>
-                <div className={classes.backpaper}>  
-                <div className={classes.loginbox} >
-                    <form className={classes.form} noValidate>
-                        <Typography component="h1" variant="h5">
-                            로그인
-                        </Typography>
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            value={member.email}
-                            autoComplete="email"
-                            onChange={loginHandler}
-                            autoFocus
-                        />
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="password"
-                            value={member.password}
-                            label="Password"
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                            onChange={loginHandler}
-                        />
-                        <FormControlLabel
-                            control={<Checkbox id="remember" value="remember" color="primary" onClick={checkvalid} />}
+    return (
+        <div className="container">
+            <div className="flex-container">
+                <div className="login-wrapper">
+                    <form noValidate>
+                        <div id="title" style={{fontSize: "50px"}}>꾸욱!</div>
+                        <div>
+                            <div id="subColor">E-mail</div>
+                            <TextField
+                                className="inputText"
+                                variant="outlined"
+                                margin="none"
+                                required
+                                fullWidth
+                                id="email"
+                                // label="Email Address"
+                                name="email"
+                                value={member.email}
+                                autoComplete="email"
+                                onChange={loginHandler}
+                                autoFocus
+                                size="small"
+                            />
+                        </div>
+                        <div className="password">
+                            <div id="subColor">Password</div>
+                            <TextField
+                                className="inputText"
+                                variant="outlined"
+                                margin="none"
+                                required
+                                fullWidth
+                                name="password"
+                                value={member.password}
+                                // label="Password"
+                                type="password"
+                                id="password"
+                                autoComplete="current-password"
+                                onChange={loginHandler}
+                                size="small"
+                            />
+                        </div>
+                        <FormControlLabel style={{color:"#838383"}}
+                            control={<Checkbox id="remember" value="remember" color="primary"
+                                               onClick={checkvalid} />}
                             label="로그인 상태 유지"
                         />
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        className={classes.submit}
-                        onClick={()=>{
-                            if(checkInputs()){
-                                onSubmitAccount();
-                            }else{
-                                //alert("아이디 혹은 비밀번호를 확인 해주세요");
-                                <Box zIndex="modal">
-                                    아이디 혹은 비밀번호를 확인 해주세요
-                                </Box>
-                            }
-                        }}
-                    >
-                    로그인
-                    </Button>
-                    <Grid container>
-                        <Grid item>
-                            <p>회원이 아니신가요? 
-                                <NavLink to="/signup" replace>
-                                {"회원가입"}
-                                </NavLink>
-                            </p>
-                            
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            onClick={() => {
+                                if (checkInputs()) {
+                                    onSubmitAccount();
+                                } else {
+                                    //alert("아이디 혹은 비밀번호를 확인 해주세요");
+                                    <Box zIndex="modal">
+                                        아이디 혹은 비밀번호를 확인 해주세요
+                                    </Box>
+                                }
+                            }}
+                        >
+                            로그인
+                        </Button>
+                        <Grid container>
+                            <Grid item>
+                                <p>회원이 아니신가요?
+                                    <NavLink to="/signup" replace style={{marginLeft:"10px",color:"#FF747",fontWeight:"bold"}}>
+                                        {"회원가입"}
+                                    </NavLink>
+                                </p>
+
+                            </Grid>
                         </Grid>
-                    </Grid>
-                </form>
-            </div>
-            </div> 
-            <div className={classes.kkuukbox}>
-            <Typography component="h1" variant="h5">
-                간편한 쿠폰 적립 <br/> 꾸욱
-            </Typography>
-            </div>
+                    </form>
+                </div>
             </div>
         </div>
-        <Box mt={8}>
-            <Copyright />
-        </Box>
-     {/* </Container> */}
-
-    </>
-
     );
-
 }
 
 export default Login;
