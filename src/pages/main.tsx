@@ -279,7 +279,7 @@ return(
                     onClick={async ()=>{
                         if(checkInputs()){
                             const res = await enroll(f);
-                            const msg = res.data.msg;
+                            const msg = res?.data.msg;
                             if(msg==="이미 가입된 고객입니다."){
                                 setSellerModal({onoff : true, msg : "이미 존재하는 고객입니다."});
                             }else{
