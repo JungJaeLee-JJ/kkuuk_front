@@ -25,20 +25,10 @@ function SignUp(){
     const [validEmail,setValidEmail] = useState(false);
     const [password,setPassword] = useState({password : ""});
     const [rePassword,setRepassword] = useState({rePassword : ""});
-    const [imgUrl, setImgUrl] = useState({
-        file: '',
-        imagePreviewUrl : '',
-    });
     const [correct,setCorrect] = useState("불일치");
     let f = new FormData();
     let f2 = new FormData();
-    let passwordFlag = false;
     let history = useHistory();
-    let {imagePreviewUrl} = imgUrl;
-    let $imagePreview: {} | null | undefined = null;
-    if (imagePreviewUrl){
-        $imagePreview = (<img className="imgBox" src={imagePreviewUrl}/>);
-    }
 
     //전화번호 유효성 검사
     const callNumHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
@@ -47,12 +37,8 @@ function SignUp(){
             setCallNum({callNum : e.target.value,})
             }
     }
+    //password 일치 불일치 감시, 휴대폰번호 통제
     useEffect(()=>{
-        // if(callNum.callNum.length === 10){
-        //     setCallNum({
-        //         callNum : callNum.callNum.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')
-        //     });
-        // }
         if(callNum.callNum.length === 11){
             setCallNum({
                 callNum : callNum.callNum.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3')
@@ -65,25 +51,11 @@ function SignUp(){
         }
     },[callNum.callNum,rePassword.rePassword]);
 
+    //모든 요소 입력
     const sellerNameHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{setSellerName({sellerName : e.target.value,})}
     const emailHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{setEmail({email : e.target.value,})}
     const passwordHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{setPassword({password : e.target.value,})}
     const repasswordHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{setRepassword({rePassword : e.target.value,})}
-
-    const  isSelectedImg = (e:React.ChangeEvent<HTMLInputElement>)=>{
-        e.preventDefault();
-        let reader = new FileReader();
-        let file = (e.target as any).files[0];
-
-        reader.onloadend = () => {
-            setImgUrl({
-                file : file,
-                imagePreviewUrl : reader.result as any
-            });
-            
-        }
-        reader.readAsDataURL(file);
-    }
 
     //이메일 유효성 검사
     const emailCorrectHandler = async() =>{
@@ -92,7 +64,7 @@ function SignUp(){
         if(emailTest){
             f2.append('email',email.email);
             //통과
-            let flag = await(duplicate(f2));
+            let flag = await duplicate(f2);
             if(flag){
                 setSellerModal({onoff : true, msg : "사용 가능 합니다."});
                 setValidEmail(true);
@@ -102,12 +74,11 @@ function SignUp(){
         }else{
             //실패
             setSellerModal({onoff : true, msg : "이메일 형식이 잘못되었습니다."});
-        }
-        
+        }  
 
     }
 
-
+//양식 유효성 검사
 const checkInputs= async() => {
     let re = /\S+@\S+\.\S+/;
     let emailTest = re.test(email.email);
@@ -116,6 +87,25 @@ const checkInputs= async() => {
     f.append('email',email.email);f.append('call',callNum.callNum);f.append('username',sellerName.sellerName);f.append('password',password.password);
 
     return (emailTest && pwTest && af);
+}
+
+//res code에 따라 분기
+const signUpHandler = async()=>{
+    try{
+        let res =  await signup(f);
+        if(res.code==500){
+            setSellerModal({onoff:true,msg:"회원 가입 실패입니다."});
+        }else if(res.code==200){
+            setSellerModal({onoff:true,msg:"회원 가입이 성공적으로 완료되었습니다!"});
+            history.push('/');
+        }else{
+            setSellerModal({onoff:true,msg:"관리자에게 문의 바랍니다."})
+        }
+    }catch(e){
+        alert(e);
+    }
+    
+    
 }
 
 
@@ -221,13 +211,9 @@ return(
 
                     {
                         if(checkInputs()&&validEmail){
-                            signup(f);
-                            if(sellerModal.onoff ===false){
-                                history.replace('/');
-                            }
-                            
+                            signUpHandler();
                         }else{
-                            setSellerModal({onoff : true, msg : "회원 가입 실패입니다!."});
+                            setSellerModal({onoff : true, msg : "양식을 확인해 주세요."});
                         }
                      }
                 }

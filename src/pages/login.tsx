@@ -20,6 +20,7 @@ type loginProps = {
 
 function Login({}: loginProps) {
     const {sellerInfo, setSellerInfo} = useContext<ISellerContext>(SellerContext);
+    const {sellerModal,setSellerModal} = useContext<ISellerContext>(SellerContext);
     let history = useHistory();
     let f = new FormData();
     const [member, setMember] = useState<loginProps>({
@@ -38,11 +39,18 @@ function Login({}: loginProps) {
     const onSubmitAccount = async () => {
         try {
             const seller = await logIn(f);
-            setSellerInfo({
-                username: seller.username,
-                email: seller.email,
-            });
-            history.push("/main");
+            console.log(seller)
+                if(seller.code==200){
+                setSellerInfo({
+                    username: seller.data.username,
+                    email: seller.data.email,
+                });
+                history.push("/main");
+            }else if(seller.code==400){
+                setSellerModal({onoff:true,msg:"등록되지 않은 이메일 입니다."})
+            }else{
+                setSellerModal({onoff:true,msg:"비밀번호를 확인해 주세요."})
+            }
         } catch (e) {
             window.alert(e);
         }

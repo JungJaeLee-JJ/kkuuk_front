@@ -14,9 +14,9 @@ import Copyright from '../components/copyright.js';
 import HeaderBar from '../components/header.js';
 import ClipLoader from "react-spinners/ClipLoader";
 import axios from 'axios';
+import { ConsoleWriter } from 'istanbul-lib-report';
 
 type MainProps = {
-
 }
 
 type memberProps = {
@@ -36,14 +36,11 @@ function Main({}:MainProps){
     
     const {sellerInfo,setSellerInfo} = useContext<ISellerContext>(SellerContext);
     const {sellerModal,setSellerModal} = useContext<ISellerContext>(SellerContext);
-    const lm = localStorage.getItem('Email');
-    const sm = sessionStorage.getItem('Email');
-    const lt = localStorage.getItem('TOKEN');
-    const st = sessionStorage.getItem('TOKEN');
-
     let history = useHistory();
     let f = new FormData();//member
-    let f2 = new FormData();//point
+    let f2 = new FormData();//lookupm
+    let f3 = new FormData(); //accpoint
+    let f4 = new FormData(); //usePoint
 
     const [member,setMember] = useState<memberProps>({
         email : sellerInfo?.email as string,
@@ -69,10 +66,6 @@ function Main({}:MainProps){
     });
 
     const [myClient, setMyClient] = useState<any[]>([]);
-    const [onModal, setOnModal] = useState({
-        onoff : false,
-        msg : "",
-    });
 
     
 
@@ -83,6 +76,7 @@ function Main({}:MainProps){
         [e.target.name] : e.target.value,
         })
     }
+    //고객 등록 휴대폰 뒷자리
     const callNumHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
         const regex = /^[0-9\b -]{0,4}$/;
         if(regex.test(e.target.value)){
@@ -90,6 +84,7 @@ function Main({}:MainProps){
                 callNum : e.target.value,})
             }
     }
+    //등록 고객 유효성 검사
     const checkInputs=()=>{
         const name = member.name.length >=1;
         const bnum = member.callNum.length ===4;
@@ -98,6 +93,8 @@ function Main({}:MainProps){
         f.append('last_4_digit',member.callNum);
         return (name && bnum)
     }
+
+
     //고객 조회
     const lookupmemberHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
         setTargetMember({
@@ -105,6 +102,7 @@ function Main({}:MainProps){
         [e.target.name] : e.target.value,
         })
     }
+    //조회 고객 전화번호 뒷자맂
     const lookupcallNumHandler = (e:React.ChangeEvent<HTMLInputElement>) =>{
         const regex = /^[0-9\b -]{0,4}$/;
         if(regex.test(e.target.value)){
@@ -112,11 +110,12 @@ function Main({}:MainProps){
                 callNum : e.target.value,})
             }
     }
+    //조회 고객 유효성 검사
     const checkLookupInputs=()=>{
         const name = targetMember.name.length >=1;
         const bnum = targetMember.callNum.length ===4;
-        f.append('email',sellerInfo?.email as string);
-        f.append('last_4_digit',targetMember.callNum);
+        f2.append('email',sellerInfo?.email as string);
+        f2.append('last_4_digit',targetMember.callNum);
         return (name && bnum)
     }
     //포인트 적립
@@ -130,10 +129,10 @@ function Main({}:MainProps){
         const name = memberPoint.name.length>=1;
         const bnum = memberPoint.callNum.length===4;
         const pt = memberPoint.point>0;
-        f2.append('val',memberPoint.point as any);
-        f2.append('last_4_digit',memberPoint.callNum);
-        f2.append('name',memberPoint.name);
-        f2.append('email',memberPoint.email);
+        f3.append('val',memberPoint.point as any);
+        f3.append('last_4_digit',memberPoint.callNum);
+        f3.append('name',memberPoint.name);
+        f3.append('email',memberPoint.email);
         return (name&&bnum&&pt);
     }
     //포인트 사용
@@ -147,52 +146,48 @@ function Main({}:MainProps){
         const name = memberUsePoint.name.length>=1;
         const bnum = memberUsePoint.callNum.length===4;
         const pt = memberPoint.point>0;
-        f2.append('val',memberUsePoint.point*-1 as any);
-        f2.append('last_4_digit',memberUsePoint.callNum);
-        f2.append('name',memberUsePoint.name);
-        f2.append('email',memberUsePoint.email);
+        f4.append('val',memberUsePoint.point*-1 as any);
+        f4.append('last_4_digit',memberUsePoint.callNum);
+        f4.append('name',memberUsePoint.name);
+        f4.append('email',memberUsePoint.email);
         return (name&&bnum&&pt);
     }
-    //useeffect
-    useEffect(()=>{
-        if(lm!==null){
-            //get요청
-            setSellerInfo({
-                ...sellerInfo,
-                email : localStorage.getItem('Email')
-            });
-            axios.defaults.headers.common["Authorization"] = `Token ${lt}`;
-            console.log(lm);
-        }
-        else if(sm!==null){
-            //get요청
-            setSellerInfo({
-                ...sellerInfo,
-                email : sessionStorage.getItem('Email')
-            });
-            axios.defaults.headers.common["Authorization"] = `Token ${st}`;
-            console.log(sm);
-        }else{
-            setTimeout(()=>{
-                localStorage.removeItem('Email');
-                sessionStorage.removeItem('Email');
-                history.replace("/bad_request");
-            },5000)
-        }
-    },[]);    
-    
-    
 
     const logout = () =>{
         setSellerInfo(undefined);
-        if(lm!==null){
-            localStorage.removeItem('Email');
-            localStorage.removeItem('TOKEN');
-        }else if(sm!==null){
-            sessionStorage.removeItem('Email');
-            sessionStorage.removeItem('TOKEN');
-        }
         history.replace('/');
+    }
+
+    const submitEnroll=async()=>{
+        const res = await enroll(f);
+        const msg = res?.data.msg;
+        if(msg==="이미 가입된 고객입니다."){
+            setSellerModal({onoff : true, msg : "이미 존재하는 고객입니다."});
+        }else if(msg==="고객 등록이 완료 되었습니다."){
+            setSellerModal({onoff : true, msg : `환영 합니다 ${member.name}님!`});
+        }else{
+            setSellerModal({onoff : true, msg : "관리자에게 문의 바랍니다."});
+        }
+    }
+
+    const submitLookup=async()=>{
+        const res = await lookup(f2);
+        console.log(res);
+        if(res.length===0){
+            setSellerModal({onoff:true,msg:"해당 번호에 해당하는 고객들이 없습니다."})
+        }else{
+            setMyClient(res);
+        }  
+    }
+
+    const submitPoint=async()=>{
+        const res = await earn(f3);
+        setSellerModal({onoff : true, msg : "포인트 적립이 완료되었습니다."});  
+    }
+
+    const submitUsePoint=async()=>{
+        const res = await earn(f2);
+        setSellerModal({onoff : true, msg : "포인트 사용이 완료되었습니다."});
     }
 
     //style
@@ -241,7 +236,7 @@ return(
     :
     <div className={classes.paper}>
         <Typography component="h1" variant="h5">
-                    {`${sellerInfo.email} 님 환영합니다!`}
+                    {`${sellerInfo.username} 님 환영합니다!`}
                 </Typography>
                 <button onClick={logout}>로그아웃</button>
         <div className={classes.clientbox}>
@@ -276,17 +271,11 @@ return(
                     variant="contained"
                     color="primary"
                     className={classes.submit}
-                    onClick={async ()=>{
+                    onClick={()=>{
                         if(checkInputs()){
-                            const res = await enroll(f);
-                            const msg = res?.data.msg;
-                            if(msg==="이미 가입된 고객입니다."){
-                                setSellerModal({onoff : true, msg : "이미 존재하는 고객입니다."});
-                            }else{
-                                setSellerModal({onoff : true, msg : `환영 합니다 ${member.name}님!`});
-                            }
+                            submitEnroll();
                         }else{
-                            alert("Error");
+                            setSellerModal({onoff:true, msg: "빈 칸이 있습니다."})
                         }
                     }}>
                         추가
@@ -327,7 +316,7 @@ return(
                     className={classes.submit}
                     onClick={async()=>{
                         if(checkLookupInputs()){
-                        setMyClient(await lookup(f));//고객 list 저장
+                            submitLookup();
                         }else{
                             setSellerModal({onoff : true, msg : "올바른 입력을 해주세요."});
                         }
@@ -342,7 +331,8 @@ return(
             </Typography>
             <div className={classes.pointsubbox}>
                     {
-                        myClient && myClient.map((value,key)=>{
+                        myClient? 
+                        myClient.map((value,key)=>{
                             return(
                                 <div><input type="radio" name={targetMember.callNum} value={value.name} onClick={()=>{
                                     setMemberPoint({
@@ -358,8 +348,10 @@ return(
                                 }}/>{`뒷자리 : ${targetMember.callNum} 이름 : ${value.name} 쿠폰 개수 : ${value.stamp}`}</div>
                             )
                         })
-                        // radio chk logic
+                        :
+                        <></>
                     }
+                    
             </div>
             <div className={classes.pointmainbox}>
                     <TextField
@@ -381,8 +373,7 @@ return(
                         className={classes.submit}
                         onClick={()=>{
                             if(checkPointInputs()){
-                                earn(f2);
-                                setSellerModal({onoff : true, msg : "포인트 적립이 완료되었습니다."});   
+                                submitPoint(); 
                             }else{
                                 setSellerModal({onoff : true, msg : "서버 에러"});
                             }
@@ -408,13 +399,10 @@ return(
                         className={classes.submit}
                         onClick={()=>{
                             if(checkUsePointInputs()){
-                                earn(f2);
-                                setSellerModal({onoff : true, msg : "포인트 사용이 완료되었습니다."});
+                               submitUsePoint();
                             }else{
                                 setSellerModal({onoff : true, msg : "서버 에러"});
                             }
-
-                            //useEffect 현재 포인트 초과 금지 logic 추가
                         }}
                     >사용</Button>
                     {sellerModal?.onoff? <CustomModal/> : <></>}
