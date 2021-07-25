@@ -30,39 +30,8 @@ function Client(){
     });
     const [myClients,setMyClients] = useState<any[]>([]);
     const f = new FormData();
-    const lm = localStorage.getItem('Email');
-    const sm = sessionStorage.getItem('Email');
-    const lt = localStorage.getItem('TOKEN');
-    const st = sessionStorage.getItem('TOKEN');
 
     let history = useHistory();
-
-    useEffect(()=>{
-        if(lm!==null){
-            //get요청
-            setSellerInfo({
-                ...sellerInfo,
-                email : localStorage.getItem('Email')
-            });
-            axios.defaults.headers.common["Authorization"] = `Token ${lt}`;
-            console.log(lm);
-        }
-        else if(sm!==null){
-            //get요청
-            setSellerInfo({
-                ...sellerInfo,
-                email : sessionStorage.getItem('Email')
-            });
-            axios.defaults.headers.common["Authorization"] = `Token ${st}`;
-            console.log(sm);
-        }else{
-            setTimeout(()=>{
-                localStorage.removeItem('Email');
-                sessionStorage.removeItem('Email');
-                history.replace("/bad_request");
-            },5000)
-        }
-    },[]);
     
 
     const checkLookupInputs=()=>{

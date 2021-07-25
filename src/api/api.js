@@ -22,21 +22,10 @@ export const logIn = async(f)=>{
     const response = await axios.post(`${uri}/login`,f);
     axios.defaults.headers.common["Authorization"] = `Token ${response.data.data.token}`;
     console.log(response);
-    return response.data.data;
+    return response.data;
     }catch(e){
         alert(e);
     }
-    
-    
-    
-    
-    // const users = response.data;
-    // console.log(users);
-    // const user = users.find((user)=>user.email === member.email);
-    // if(!user||user.password !== member.password){
-    //     throw new Error("아이디 또는 비밀번호가 일치하지 않습니다.");
-    // }
-     
 }
 
 //회원조회
