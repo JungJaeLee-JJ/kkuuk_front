@@ -3,26 +3,19 @@ import {useHistory, Link, NavLink} from "react-router-dom";
 
 import {logIn} from "../api/api";
 import {SellerContext} from "../context/seller";
-import Image from '../asset/login.jpg';
 
 
 import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import {makeStyles} from '@material-ui/core/styles';
-import Copyright from '../components/copyright.js';
 
 
 type loginProps = {
-
     email: string,
-
     password: string
-
 };
 
 function Login({}: loginProps) {
@@ -30,44 +23,31 @@ function Login({}: loginProps) {
     let history = useHistory();
     let f = new FormData();
     const [member, setMember] = useState<loginProps>({
-
         email: "",
-
         password: "",
-
     });
-
-    useEffect(() => {
-        const ls = localStorage.getItem("Email");
-        if (ls !== null) {
-            history.replace("/main");
-        }
-    }, [])
-
+    //로그인 시 이메일 비밀번호 감지 함수
     const loginHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-
         setMember({
-
             ...member,
-
             [e.target.name]: e.target.value,
-
         })
-
     }
-
+    // check input 이 유효하다면 해당 로직 실행
+    // 로그인으로 form 넘겨주고 그 정보를 context에 저장한 뒤 main으로 이동시킴
     const onSubmitAccount = async () => {
         try {
-            const seller = await logIn(f, sellerInfo?.ACCESS_TOKEN);
+            const seller = await logIn(f);
             setSellerInfo({
                 username: seller.username,
                 email: seller.email,
             });
-            history.replace("/main");
+            history.push("/main");
         } catch (e) {
             window.alert(e);
         }
     }
+    //이메일 1글자 이상, 패스우드 7글자 이상.
     const checkInputs = () => {
         let a = member.email.length >= 1;
         let b = member.password.length >= 7;
@@ -75,39 +55,6 @@ function Login({}: loginProps) {
         f.append('password', member.password);
         return (a && b);
     }
-    //
-    const checkvalid = () => {
-        setSellerInfo({
-            ...sellerInfo,
-            ACCESS_TOKEN: "LOCAL"
-        })
-    }
-
-    //style
-    const useStyles = makeStyles((theme) => ({
-        paper: {
-            // marginTop: theme.spacing(20),
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            border: '5pt groove #3f51b5',
-            height: 'auto',
-
-        },
-        avatar: {
-            margin: theme.spacing(1),
-            backgroundColor: theme.palette.secondary.main,
-        },
-        form: {
-            width: '70%',
-            marginTop: theme.spacing(1),
-        },
-        submit: {
-            margin: theme.spacing(3, 0, 2),
-        },
-    }));
-    const classes = useStyles();
-
 
     return (
         <div className="container">
@@ -153,7 +100,7 @@ function Login({}: loginProps) {
                         </div>
                         <FormControlLabel style={{color:"#838383"}}
                             control={<Checkbox id="remember" value="remember" color="primary"
-                                               onClick={checkvalid} />}
+                                                />}
                             label="로그인 상태 유지"
                         />
                         <Button
@@ -164,7 +111,7 @@ function Login({}: loginProps) {
                                 if (checkInputs()) {
                                     onSubmitAccount();
                                 } else {
-                                    //alert("아이디 혹은 비밀번호를 확인 해주세요");
+                                    alert("아이디 혹은 비밀번호를 확인 해주세요");
                                     <Box zIndex="modal">
                                         아이디 혹은 비밀번호를 확인 해주세요
                                     </Box>

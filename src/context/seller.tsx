@@ -1,7 +1,7 @@
 import React, {createContext, useState} from 'react';
 
 const defaultContext : ISellerContext = {
-        sellerInfo: {username : undefined, email : undefined, ACCESS_TOKEN : "SESSION", ACCESS_TOKEN_VAL : ""},
+        sellerInfo: {username : undefined, email : undefined},
         setSellerInfo : undefined,
         sellerModal : {onoff : false, msg : ""},
         setSellerModal : undefined,
@@ -16,7 +16,10 @@ interface Props{
 }
 
 const SellerContextProvider = ({children}:Props) => {
-    const [sellerInfo, setSellerInfo] = useState<ISellerInfo | undefined>({username : undefined, email : undefined, ACCESS_TOKEN : "SESSION", ACCESS_TOKEN_VAL : ""});
+    const [sellerInfo, setSellerInfo] = useState<ISellerInfo | undefined>({
+        username : undefined, 
+        email : undefined
+    });
     const [sellerModal, setSellerModal] = useState<ISellerModal>({
         onoff : false,
         msg : "",
