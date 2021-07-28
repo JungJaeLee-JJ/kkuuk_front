@@ -34,6 +34,9 @@ function Login({}: loginProps) {
             [e.target.name]: e.target.value,
         })
     }
+    // 자동로그인
+    const [autoLogin, setAutoLogin] = useState(false);
+
     // check input 이 유효하다면 해당 로직 실행
     // 로그인으로 form 넘겨주고 그 정보를 context에 저장한 뒤 main으로 이동시킴
     const onSubmitAccount = async () => {
@@ -107,8 +110,8 @@ function Login({}: loginProps) {
                             />
                         </div>
                         <FormControlLabel style={{color:"#838383"}}
-                            control={<Checkbox id="remember" value="remember" color="primary"
-                                                />}
+                            control={<Checkbox id="remember" value={autoLogin} color="primary"
+                                                onChange={(e)=>{setAutoLogin(e.target.checked)}}/>}
                             label="로그인 상태 유지"
                         />
                         <Button

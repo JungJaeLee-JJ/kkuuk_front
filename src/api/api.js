@@ -16,7 +16,6 @@ export const signup = async(f) => {
 }
 
 //서버 완성되면 post로 요청 바꿈, view에서 일치여부 판단.
-
 export const logIn = async(f)=>{
     try{
     const response = await axios.post(`${uri}/login`,f);
@@ -28,6 +27,14 @@ export const logIn = async(f)=>{
         alert(e);
     }
 }
+
+// export const storeInfo = async ()=>{
+//     try {
+//         const response = await axios.get(`${uri}/storeinfo`);
+//     }catch (e){
+//         alert(e)
+//     }
+// }
 
 //회원조회
 export const lookup = async(f)=>{

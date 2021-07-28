@@ -31,10 +31,11 @@ const SellerContextProvider = ({children}:Props) => {
     const sessionGet =  async()=>{
         if(sessionStorage.length!==0){
           let sessionToken = sessionStorage.getItem('Token');
-          axios.defaults.headers.common['Authorization'] = `Bearer ${sessionToken}`;
+          axios.defaults.headers.common['Authorization'] = `Token ${sessionToken}`;
           try{
-            const res = await axios.get(`${uri}`);
-            console.log("session" + res);
+            const res = await axios.get(`${uri}/storeinfo`);
+            // console.log(res.data);
+            setSellerInfo({username:res.data.email, email:res.data.email});
           }catch(e){
               console.log(e);
           }
