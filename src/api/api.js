@@ -20,7 +20,8 @@ export const signup = async(f) => {
 export const logIn = async(f)=>{
     try{
     const response = await axios.post(`${uri}/login`,f);
-    axios.defaults.headers.common["Authorization"] = `Token ${response.data.data.token}`;
+    axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.data.token}`;
+    sessionStorage.setItem('Token',response.data.data.token);
     console.log(response);
     return response.data;
     }catch(e){
