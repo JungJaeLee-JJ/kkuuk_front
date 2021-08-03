@@ -17,11 +17,16 @@ export const signup = async(f) => {
 
 //서버 완성되면 post로 요청 바꿈, view에서 일치여부 판단.
 
-export const logIn = async(f)=>{
+export const logIn = async(f,auto)=>{
     try{
     const response = await axios.post(`${uri}/login`,f);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.data.token}`;
-    sessionStorage.setItem('Token',response.data.data.token);
+    axios.defaults.headers.common['Authorization'] = `TOKEN ${response.data.data.token}`;
+    if(auto){
+        localStorage.setItem('Token',response.data.data.token);
+    }else{
+        sessionStorage.setItem('Token',response.data.data.token);
+    }
+    
     console.log(response);
     return response.data;
     }catch(e){
@@ -82,4 +87,14 @@ export const duplicate = async(f)=>{
         alert(e);
     }
     
+}
+
+export const sellerInfoGet = async()=> {
+    try{
+        const response = await axios.get(`${uri}/storeinfo`);
+        console.log(response);
+        return response.data;
+    }catch(e){
+        alert(e);
+    }
 }
