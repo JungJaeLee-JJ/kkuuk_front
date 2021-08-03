@@ -44,6 +44,7 @@ function Login({}: loginProps) {
             [e.target.name]: e.target.value,
         })
     }
+
     // check input 이 유효하다면 해당 로직 실행
     // 로그인으로 form 넘겨주고 그 정보를 context에 저장한 뒤 main으로 이동시킴
     const onSubmitAccount = async () => {

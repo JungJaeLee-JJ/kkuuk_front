@@ -34,6 +34,14 @@ export const logIn = async(f,auto)=>{
     }
 }
 
+// export const storeInfo = async ()=>{
+//     try {
+//         const response = await axios.get(`${uri}/storeinfo`);
+//     }catch (e){
+//         alert(e)
+//     }
+// }
+
 //회원조회
 export const lookup = async(f)=>{
     //f => seller Email(pk), name, callNum
