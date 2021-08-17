@@ -1,5 +1,6 @@
-import React, {createContext, useState} from 'react';
-
+import React, {createContext, useState,useEffect} from 'react';
+import {uri} from '../api/config';
+import axios from 'axios';
 const defaultContext : ISellerContext = {
         sellerInfo: {username : undefined, email : undefined},
         setSellerInfo : undefined,
@@ -27,6 +28,23 @@ const SellerContextProvider = ({children}:Props) => {
     const sellerSet = () =>{
 
     }
+    const sessionGet =  async()=>{
+        if(sessionStorage.length!==0){
+          let sessionToken = sessionStorage.getItem('Token');
+          axios.defaults.headers.common['Authorization'] = `Token ${sessionToken}`;
+          try{
+            const res = await axios.get(`${uri}/storeinfo`);
+            // console.log(res.data);
+            setSellerInfo({username:res.data.email, email:res.data.email});
+          }catch(e){
+              console.log(e);
+          }
+          
+        }
+      }
+      useEffect(()=>{
+        sessionGet();
+    },[])
 
     return <SellerContext.Provider
         value = {{

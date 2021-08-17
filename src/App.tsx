@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext,useEffect } from 'react';
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Login from "./pages/login";
 import SignUp from "./pages/signup";
@@ -29,6 +29,7 @@ const theme = createMuiTheme({
 
 function App() {
   const {sellerInfo} = useContext<ISellerContext>(SellerContext);
+  
   return (
     <SellerContextProvider>
       <ThemeProvider theme={theme}>

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
-import {enroll,lookup,earn} from "../api/api.js";
+import {enroll,lookup,earn,sellerInfoGet} from "../api/api.js";
 import {SellerContext} from "../context/seller";
 import CustomModal from "../components/modal";
 
@@ -20,13 +20,11 @@ type MainProps = {
 }
 
 type memberProps = {
-    email : string;
     name : string;
     callNum : string;
 }
 
 type memberPointProps = {
-    email : string;
     name : string;
     callNum : string;
     point : number;
@@ -34,7 +32,10 @@ type memberPointProps = {
 
 function Main({}:MainProps){
     
-    const {sellerInfo,setSellerInfo} = useContext<ISellerContext>(SellerContext);
+    const [sellerInfo,setSellerInfo] = useState({
+        username :"",
+        email : ""
+    });
     const {sellerModal,setSellerModal} = useContext<ISellerContext>(SellerContext);
     let history = useHistory();
     let f = new FormData();//member
@@ -43,29 +44,70 @@ function Main({}:MainProps){
     let f4 = new FormData(); //usePoint
 
     const [member,setMember] = useState<memberProps>({
-        email : sellerInfo?.email as string,
         name : "",
         callNum : ""
     });
     const [targetMember,setTargetMember] = useState<memberProps>({
-        email : sellerInfo?.email as string,
         name : "",
         callNum : ""
     });
     const [memberPoint, setMemberPoint] = useState<memberPointProps>({
-        email : sellerInfo?.email as string,
         name : "",
         callNum : "",
         point : 0,
     });
     const [memberUsePoint, setMemberUsePoint] = useState<memberPointProps>({
-        email : sellerInfo?.email as string,
         name : "",
         callNum : "",
         point : 0,
     });
 
+    const session = async () => {
+        if(sessionStorage.length){
+            let st = sessionStorage.getItem('Token');
+            axios.defaults.headers.common['Authorization'] = `TOKEN ${st}`;
+            const res1 = await sellerInfoGet();
+            if(res1.code===200){
+            setSellerInfo({
+                username : res1.username,
+                email : res1.email,
+            });
+        }
+        else{
+            sessionStorage.clear();
+            history.replace('/login');
+        }
+
+        }
+    }
+    const local = async () => {
+        if(localStorage.length){
+            let lt = localStorage.getItem('Token');
+            axios.defaults.headers.common['Authorization'] = `TOKEN ${lt}`;
+            const res2 = await sellerInfoGet();
+            if(res2.code){
+            setSellerInfo({
+                username : res2.username,
+                email : res2.email,
+            });
+        }else{
+            localStorage.clear();
+            history.replace('/login');
+        }
+
+        }
+    }
+
+    useEffect(()=>{
+        session();
+        local();
+    },[])
+
+    
+
     const [myClient, setMyClient] = useState<any[]>([]);
+    //sessionStorage
+   
 
     
 
@@ -88,7 +130,7 @@ function Main({}:MainProps){
     const checkInputs=()=>{
         const name = member.name.length >=1;
         const bnum = member.callNum.length ===4;
-        f.append('email',sellerInfo?.email as string);
+        f.append('email',sellerInfo.email);
         f.append('name',member.name);
         f.append('last_4_digit',member.callNum);
         return (name && bnum)
@@ -114,7 +156,7 @@ function Main({}:MainProps){
     const checkLookupInputs=()=>{
         const name = targetMember.name.length >=1;
         const bnum = targetMember.callNum.length ===4;
-        f2.append('email',sellerInfo?.email as string);
+        f2.append('email',sellerInfo.email);
         f2.append('last_4_digit',targetMember.callNum);
         return (name && bnum)
     }
@@ -132,7 +174,7 @@ function Main({}:MainProps){
         f3.append('val',memberPoint.point as any);
         f3.append('last_4_digit',memberPoint.callNum);
         f3.append('name',memberPoint.name);
-        f3.append('email',memberPoint.email);
+        f3.append('email',sellerInfo.email);
         return (name&&bnum&&pt);
     }
     //포인트 사용
@@ -149,12 +191,13 @@ function Main({}:MainProps){
         f4.append('val',memberUsePoint.point*-1 as any);
         f4.append('last_4_digit',memberUsePoint.callNum);
         f4.append('name',memberUsePoint.name);
-        f4.append('email',memberUsePoint.email);
+        f4.append('email',sellerInfo.email);
         return (name&&bnum&&pt);
     }
 
     const logout = () =>{
-        setSellerInfo(undefined);
+        sessionStorage.clear();
+        localStorage.clear();
         history.replace('/');
     }
 

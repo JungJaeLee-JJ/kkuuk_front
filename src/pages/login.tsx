@@ -19,7 +19,6 @@ type loginProps = {
 };
 
 function Login({}: loginProps) {
-    const {sellerInfo, setSellerInfo} = useContext<ISellerContext>(SellerContext);
     const {sellerModal,setSellerModal} = useContext<ISellerContext>(SellerContext);
     let history = useHistory();
     let f = new FormData();
@@ -27,6 +26,17 @@ function Login({}: loginProps) {
         email: "",
         password: "",
     });
+    const [autoLogin,setAutoLogin] = useState(false);
+    const clickAutoLogin = () => {setAutoLogin(!autoLogin)}
+
+    useEffect(()=>{
+        if(sessionStorage.length){
+            history.replace('/main');
+        }
+        if(localStorage.length){
+            history.replace('/main');
+        }
+    },[])
     //로그인 시 이메일 비밀번호 감지 함수
     const loginHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         setMember({
@@ -34,17 +44,14 @@ function Login({}: loginProps) {
             [e.target.name]: e.target.value,
         })
     }
+
     // check input 이 유효하다면 해당 로직 실행
     // 로그인으로 form 넘겨주고 그 정보를 context에 저장한 뒤 main으로 이동시킴
     const onSubmitAccount = async () => {
         try {
-            const seller = await logIn(f);
+            const seller = await logIn(f,autoLogin);
             console.log(seller)
                 if(seller.code==200){
-                setSellerInfo({
-                    username: seller.data.username,
-                    email: seller.data.email,
-                });
                 history.push("/main");
             }else if(seller.code==400){
                 setSellerModal({onoff:true,msg:"등록되지 않은 이메일 입니다."})
@@ -108,6 +115,7 @@ function Login({}: loginProps) {
                         </div>
                         <FormControlLabel style={{color:"#838383"}}
                             control={<Checkbox id="remember" value="remember" color="primary"
+                                onClick={clickAutoLogin}
                                                 />}
                             label="로그인 상태 유지"
                         />
