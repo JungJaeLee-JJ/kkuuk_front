@@ -8,8 +8,8 @@ html {
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -17,26 +17,31 @@ body {
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  monospace;
 }
 
 @font-face {
   font-family: 'NanumSquareOTFBold';
   font-style: normal;
   font-weight: 100;
-  src: url('./Constants/fonts/NanumSquareOTFBold.otf') format('nanumb');
+  src: url('./Font/NanumSquareOTFBold.otf') format('nanumb');
 }
 @font-face {
   font-family: 'NanumSquareOTFBold';
   font-style: normal;
   font-weight: 100;
-  src: url('./Constants/fonts/NanumSquareOTFRegular.ot.otf') format('nanumr');
+  src: url('./Font/NanumSquareOTFRegular.ot.otf') format('nanumr');
 }
 @font-face {
   font-family: 'NanumSquareOTFBold';
   font-style: normal;
   font-weight: 100;
-  src: url('./Constants/fonts/ONE\ Mobile\ POP\ OTF.otf') format('om');
+  src: url('./Font/ONE Mobile POP OTF.otf') format('om');
 }
 
-
+@font-face {
+  font-family: '';
+  font-style: normal;
+  font-weight: 100;
+  src: url('./Font/ONE Mobile POP OTF.otf') format('om');
+}
